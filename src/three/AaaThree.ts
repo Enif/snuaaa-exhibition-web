@@ -1,10 +1,12 @@
 import * as THREE from 'three';
 import { BufferAttribute } from 'three';
+import Stats from 'three/examples/jsm/libs/stats.module.js';
 import testImg from '../assets/imgs/test.jpg';
 
+const SPEED = 1;
+const SPEED_ROTATE = 0.005;
 
 const AaaThree = (function () {
-
 
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
 
@@ -20,9 +22,68 @@ const AaaThree = (function () {
 
     const objects: THREE.Mesh[] = [];
     const raycaster = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(0, - 1, 0), 0, 10);
+    const stats = Stats();
 
     let vertex = new THREE.Vector3();
     let color = new THREE.Color();
+
+    const Moving = (function () {
+
+        let moveLeft = false;
+        let moveRight = false;
+        let moveForward = false;
+        let moveBackward = false;
+        let rotation = 0;
+
+        const setMoveLeft = function (isMove: boolean) {
+            moveLeft = isMove;
+        }
+        const setMoveRight = function (isMove: boolean) {
+            moveRight = isMove;
+        }
+        const setMoveForward = function (isMove: boolean) {
+            moveForward = isMove;
+        }
+        const setMoveBackward = function (isMove: boolean) {
+            moveBackward = isMove;
+        }
+        const setRotation = function (value: number) {
+            rotation = value;
+        }
+        const addRotation = function (value: number) {
+            rotation += value;
+        }
+        const getMoveLeft = function () {
+            return moveLeft;
+        }
+        const getMoveRight = function () {
+            return moveRight;
+        }
+        const getMoveForward = function () {
+            return moveForward;
+        }
+        const getMoveBackward = function () {
+            return moveBackward;
+        }
+        const getRotation = function () {
+            return rotation;
+        }
+
+        return {
+            setMoveLeft: setMoveLeft,
+            setMoveRight: setMoveRight,
+            setMoveForward: setMoveForward,
+            setMoveBackward: setMoveBackward,
+            setRotation: setRotation,
+            addRotation: addRotation,
+            getMoveLeft: getMoveLeft,
+            getMoveRight: getMoveRight,
+            getMoveForward: getMoveForward,
+            getMoveBackward: getMoveBackward,
+            getRotation: getRotation
+        }
+    })()
+
 
     function init(targetElement: HTMLDivElement) {
 
@@ -53,6 +114,8 @@ const AaaThree = (function () {
         targetElement.appendChild(renderer.domElement);
         //
         window.addEventListener('resize', onWindowResize, false);
+
+        targetElement.appendChild(stats.dom);
 
     }
 
@@ -169,7 +232,7 @@ const AaaThree = (function () {
 
                     // scene.add(photo);
 
-                    resolve([ frame, photo ]);
+                    resolve([frame, photo]);
 
                 },
                 // onProgress callback currently not supported
@@ -214,14 +277,40 @@ const AaaThree = (function () {
 
     function animate() {
         requestAnimationFrame(animate);
+        // console.log('animate')
+        if (Moving.getMoveLeft()) {
+            moveCamera(0, -SPEED);
+        }
+        if (Moving.getMoveRight()) {
+            moveCamera(0, SPEED);
+        }
+        if (Moving.getMoveForward()) {
+            moveCamera(SPEED, 0);
+        }
+        if (Moving.getMoveBackward()) {
+            moveCamera(-SPEED, 0);
+        }
+        if (Moving.getRotation()) {
+
+            let division = Moving.getRotation() > 0
+                ? Math.floor(Moving.getRotation() * 9 / 10)
+                : Math.ceil(Moving.getRotation() * 9 / 10);
+            rotateCamera(0, (Moving.getRotation() - division) * SPEED_ROTATE, 0)
+            Moving.setRotation(division)
+        }
+        stats.update();
+
         renderer.render(scene, camera);
     }
 
     return {
         init: init,
         animate: animate,
-        moveCamera: moveCamera,
-        rotateCamera: rotateCamera
+        setMoveLeft: Moving.setMoveLeft,
+        setMoveRight: Moving.setMoveRight,
+        setMoveForward: Moving.setMoveForward,
+        setMoveBackward: Moving.setMoveBackward,
+        addRotation: Moving.addRotation,
     }
 
 })();
