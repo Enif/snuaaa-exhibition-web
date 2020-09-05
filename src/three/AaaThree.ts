@@ -6,6 +6,65 @@ import testImg from '../assets/imgs/test.jpg';
 const SPEED = 1;
 const SPEED_ROTATE = 0.005;
 
+
+const Moving = (function () {
+
+    let moveLeft = false;
+    let moveRight = false;
+    let moveForward = false;
+    let moveBackward = false;
+    let rotation = 0;
+
+    const setMoveLeft = function (isMove: boolean) {
+        moveLeft = isMove;
+    }
+    const setMoveRight = function (isMove: boolean) {
+        moveRight = isMove;
+    }
+    const setMoveForward = function (isMove: boolean) {
+        moveForward = isMove;
+    }
+    const setMoveBackward = function (isMove: boolean) {
+        moveBackward = isMove;
+    }
+    const setRotation = function (value: number) {
+        rotation = value;
+    }
+    const addRotation = function (value: number) {
+        rotation += value;
+    }
+    const getMoveLeft = function () {
+        return moveLeft;
+    }
+    const getMoveRight = function () {
+        return moveRight;
+    }
+    const getMoveForward = function () {
+        return moveForward;
+    }
+    const getMoveBackward = function () {
+        return moveBackward;
+    }
+    const getRotation = function () {
+        return rotation;
+    }
+
+    return {
+        setMoveLeft: setMoveLeft,
+        setMoveRight: setMoveRight,
+        setMoveForward: setMoveForward,
+        setMoveBackward: setMoveBackward,
+        setRotation: setRotation,
+        addRotation: addRotation,
+        getMoveLeft: getMoveLeft,
+        getMoveRight: getMoveRight,
+        getMoveForward: getMoveForward,
+        getMoveBackward: getMoveBackward,
+        getRotation: getRotation
+    }
+})()
+
+
 const AaaThree = (function () {
 
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
@@ -21,73 +80,16 @@ const AaaThree = (function () {
     yawObject.position.y = 1;
 
     const objects: THREE.Mesh[] = [];
-    const raycaster = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(0, - 1, 0), 0, 10);
+    const raycaster = new THREE.Raycaster();
     const stats = Stats();
 
     let vertex = new THREE.Vector3();
     let color = new THREE.Color();
 
-    const Moving = (function () {
-
-        let moveLeft = false;
-        let moveRight = false;
-        let moveForward = false;
-        let moveBackward = false;
-        let rotation = 0;
-
-        const setMoveLeft = function (isMove: boolean) {
-            moveLeft = isMove;
-        }
-        const setMoveRight = function (isMove: boolean) {
-            moveRight = isMove;
-        }
-        const setMoveForward = function (isMove: boolean) {
-            moveForward = isMove;
-        }
-        const setMoveBackward = function (isMove: boolean) {
-            moveBackward = isMove;
-        }
-        const setRotation = function (value: number) {
-            rotation = value;
-        }
-        const addRotation = function (value: number) {
-            rotation += value;
-        }
-        const getMoveLeft = function () {
-            return moveLeft;
-        }
-        const getMoveRight = function () {
-            return moveRight;
-        }
-        const getMoveForward = function () {
-            return moveForward;
-        }
-        const getMoveBackward = function () {
-            return moveBackward;
-        }
-        const getRotation = function () {
-            return rotation;
-        }
-
-        return {
-            setMoveLeft: setMoveLeft,
-            setMoveRight: setMoveRight,
-            setMoveForward: setMoveForward,
-            setMoveBackward: setMoveBackward,
-            setRotation: setRotation,
-            addRotation: addRotation,
-            getMoveLeft: getMoveLeft,
-            getMoveRight: getMoveRight,
-            getMoveForward: getMoveForward,
-            getMoveBackward: getMoveBackward,
-            getRotation: getRotation
-        }
-    })()
-
 
     function init(targetElement: HTMLDivElement) {
 
-        camera.position.y = 10;
+        camera.position.y = 20;
 
         scene.background = new THREE.Color(0xffffff);
         scene.fog = new THREE.Fog(0xffffff, 0, 750);
@@ -249,11 +251,18 @@ const AaaThree = (function () {
 
 
     const moveCamera = function (forward: number, right: number) {
-        yawObject.position.x += forward * getCameraDirection().x;
-        yawObject.position.z += forward * getCameraDirection().z;
 
-        yawObject.position.x -= right * getCameraDirection().z;
-        yawObject.position.z += right * getCameraDirection().x;
+        const dx = forward * getCameraDirection().x - right * getCameraDirection().z;
+        const dz = forward * getCameraDirection().z + right * getCameraDirection().x;
+
+        const moveDirection = new THREE.Vector3(dx, 0, dz)
+        raycaster.set(yawObject.position, moveDirection.normalize());
+        const intersections = raycaster.intersectObjects(objects)
+
+        if (!intersections[0] || intersections[0].distance > 20) {
+            yawObject.position.x += dx;
+            yawObject.position.z += dz;
+        }
     }
 
     const rotateCamera = function (dx: number, dy: number, dz: number) {
