@@ -1,11 +1,14 @@
 import * as THREE from 'three';
 import { BufferAttribute } from 'three';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
+import { RectAreaLightHelper } from 'three/examples/jsm/helpers/RectAreaLightHelper.js'
 import testImg from '../assets/imgs/test.jpg';
 
 const SPEED = 1;
 const SPEED_ROTATE = 0.005;
-
+const HALL_HEIGHT = 80;
+const HALL_SIZE_X = 200;
+const HALL_SIZE_Y = 200;
 
 const Moving = (function () {
 
@@ -91,25 +94,28 @@ const AaaThree = (function () {
 
         camera.position.y = 20;
 
-        scene.background = new THREE.Color(0xffffff);
-        scene.fog = new THREE.Fog(0xffffff, 0, 750);
-
-        const light = new THREE.HemisphereLight(0xeeeeff, 0x777788, 0.75);
-        light.position.set(0.5, 1, 0.75);
+        scene.background = new THREE.Color('#000e2c');
+        // scene.fog = new THREE.Fog(0xffffff, 0, 750);
 
         const floor = makeFloor();
         const walls = makeWall();
+        const ceiling = makeCeiling();
+        const lights = makeLights();
+
         makePhotoFrame()
             .then((photoFrames) => {
                 scene.add(...photoFrames);
             });
 
         scene.add(yawObject);
-        scene.add(light);
+        scene.add(...lights);
         scene.add(floor);
         scene.add(...walls);
-        // scene.add(photoFrames);
+        scene.add(ceiling);
+
         objects.push(...walls);
+
+
         //
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(window.innerWidth, window.innerHeight);
@@ -147,64 +153,108 @@ const AaaThree = (function () {
 
         for (let i = 0, l = position.count; i < l; i++) {
 
-            color.setHSL(Math.random() * 0.3 + 0.5, 0.75, Math.random() * 0.25 + 0.75);
-            colors.push(color.r, color.g, color.b);
+            color.setHSL(Math.random() * 0.3 + 0.5, 0.75, Math.random() * 0.15 + 0.75);
+            // colors.push(color.r, color.g, color.b);
+            colors.push(1, 1, 1);
         }
 
         floorGeometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
 
-        const floorMaterial = new THREE.MeshBasicMaterial({ vertexColors: true });
+        const floorMaterial = new THREE.MeshPhysicalMaterial({
+            vertexColors: true
+        });
         const floor = new THREE.Mesh(floorGeometry, floorMaterial);
 
         return floor;
     }
 
-    const makeWall = function () {
-        let boxGeometry = new THREE.BoxBufferGeometry(10, 40, 200);
-        // boxGeometry = boxGeometry.toNonIndexed(); // ensure each face has unique vertices
+    const makeCeiling = function () {
+        let ceilingGeometry = new THREE.PlaneGeometry(HALL_SIZE_X, HALL_SIZE_Y);
+        ceilingGeometry.rotateX(Math.PI / 2);
 
-        let position = boxGeometry.attributes.position;
-        let colors = [];
+        const ceilingMaterial = new THREE.MeshPhysicalMaterial({
+            vertexColors: true,
+            color: 0xc3b292,
+        });
+        // ceilingMaterial.color.setRGB(1, 1, 1);
+        const ceiling = new THREE.Mesh(ceilingGeometry, ceilingMaterial);
+        ceiling.position.setX(0);
+        ceiling.position.setY(HALL_HEIGHT);
+        ceiling.position.setZ(0);
 
-        for (let i = 0, l = position.count; i < l; i++) {
+        return ceiling;
+    }
 
-            color.setHSL(Math.random() * 0.3 + 0.5, 0.75, Math.random() * 0.25 + 0.75);
-            colors.push(color.r, color.g, color.b);
+    const makeLights = function () {
+        const lights: THREE.Light[] = [];
 
+        const hemisphereLight = new THREE.HemisphereLight(0xeeeeff, 0x777788, 0.3);
+        hemisphereLight.position.set(0, 1, 0);
+        lights.push(hemisphereLight);
+
+        const rectLight = new THREE.RectAreaLight(0xffffff, 10, 15, 15);
+        rectLight.position.set(0, HALL_HEIGHT - 0.1, -80);
+        rectLight.rotation.set(- Math.PI / 2, 0, 0);
+        // const rectLightHelper = new RectAreaLightHelper(rectLight);
+        // rectLight.add(rectLightHelper);
+        // lights.push(rectLight);
+
+        const pointLights = makePointLights(200, 200, 50);
+        console.dir(pointLights);
+        lights.push(...pointLights);
+
+
+        return lights;
+    }
+
+    const makePointLights = function (spaceX: number, spaceY: number, distance: number) {
+
+        const PointLightintensity = 0.1
+
+        const mX = Math.ceil((spaceX / 2) / distance);
+        const mY = Math.ceil((spaceY / 2) / distance);
+
+        const pointLights = [];
+        for (let i = -mX + 1; i < mX; i++) {
+            for (let j = -mY + 1; j < mY; j++) {
+                let pointLight = new THREE.PointLight(0xffffff, PointLightintensity, 500);
+                pointLight.position.set(i * distance, HALL_HEIGHT, j * distance);
+                pointLights.push(pointLight);
+
+            }
         }
+        return pointLights;
+    }
 
-        boxGeometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+    const makeWall = function () {
+        const boxGeometry = new THREE.BoxBufferGeometry(10, HALL_HEIGHT, HALL_SIZE_X);
+        const boxMaterial = new THREE.MeshPhysicalMaterial({
+            flatShading: true,
+            dithering: true,
+            color: new THREE.Color('#ffffff')
+        });
 
-        let boxMaterial = new THREE.MeshPhongMaterial({ specular: 0xffffff, flatShading: true, vertexColors: true });
-        boxMaterial.color.setHSL(Math.random() * 0.2 + 0.5, 0.75, Math.random() * 0.25 + 0.75);
+        const walls = [];
 
-        let box1 = new THREE.Mesh(boxGeometry, boxMaterial);
-        box1.position.x = 100;
-        box1.position.y = 20;
-        box1.position.z = 0;
+        walls[0] = new THREE.Mesh(boxGeometry, boxMaterial);
+        walls[0].position.set(HALL_SIZE_X / 2, HALL_HEIGHT / 2, 0);
 
-        let box2 = new THREE.Mesh(boxGeometry, boxMaterial);
-        box2.position.x = -100;
-        box2.position.y = 20;
-        box2.position.z = 0;
+        walls[1] = new THREE.Mesh(boxGeometry, boxMaterial);
+        walls[1].position.set(-HALL_SIZE_X / 2, HALL_HEIGHT / 2, 0);
 
-        let box3 = new THREE.Mesh(boxGeometry, boxMaterial);
-        box3.position.x = 0;
-        box3.position.y = 20;
-        box3.position.z = 120;
-        box3.rotation.y += Math.PI / 2;
+        walls[2] = new THREE.Mesh(boxGeometry, boxMaterial);
+        walls[2].position.set(0, HALL_HEIGHT / 2, HALL_SIZE_X / 2);
+        walls[2].rotation.set(0, Math.PI / 2, 0);
 
-        let box4 = new THREE.Mesh(boxGeometry, boxMaterial);
-        box4.position.x = 0;
-        box4.position.y = 20;
-        box4.position.z = -120;
-        box4.rotation.y += Math.PI / 2;
+        walls[3] = new THREE.Mesh(boxGeometry, boxMaterial);
+        walls[3].position.set(0, HALL_HEIGHT / 2, -HALL_SIZE_X / 2);
+        walls[3].rotation.set(0, Math.PI / 2, 0);
 
-        return [box1, box2, box3, box4]
+        return walls
     }
 
     const makePhotoFrame = function () {
-        return new Promise<THREE.Mesh[]>((resolve, reject) => {
+        return new Promise<(THREE.Mesh | THREE.Light)[]>((resolve, reject) => {
 
             const loader = new THREE.ImageBitmapLoader();
 
@@ -215,26 +265,27 @@ const AaaThree = (function () {
 
                 // onLoad callback
                 function (imageBitmap: ImageBitmap) {
+                    const frameX = imageBitmap.width / 100;
+                    const frameY = imageBitmap.height / 100;
                     let texture = new THREE.CanvasTexture(imageBitmap as any);
                     let material = new THREE.MeshBasicMaterial({ map: texture });
-                    let geometry = new THREE.PlaneBufferGeometry(imageBitmap.width / 100, imageBitmap.height / 100);
+                    let geometry = new THREE.PlaneBufferGeometry(frameX, frameY);
                     let photo = new THREE.Mesh(geometry, material);
-                    photo.position.x = 0;
-                    photo.position.y = 25;
-                    photo.position.z = -114;
+                    photo.position.set(0, 25, -94.9);
                     photo.rotation.z += Math.PI;
 
-                    let frameGeometry = new THREE.RingGeometry(12, 14, 4);
-                    let frameMaterial = new THREE.MeshStandardMaterial({ color: new THREE.Color('#4e2203') })
-                    let frame = new THREE.Mesh(frameGeometry, frameMaterial);
-                    frame.position.x = 0;
-                    frame.position.y = 25;
-                    frame.position.z = -114;
-                    frame.rotation.z += Math.PI / 4;
+                    const frameGeometry = makeFrameGeometry(frameX, frameY);
+                    const frameMesh = new THREE.Mesh(frameGeometry, new THREE.MeshPhongMaterial({
+                        side: THREE.DoubleSide,
+                        color: 0x333333
+                    }));
+                    frameMesh.position.set(0, 25, -95)
 
-                    // scene.add(photo);
+                    const spotLight = new THREE.SpotLight(0xffffff, 0.8, 130, Math.PI / 9, 1, 2);
+                    spotLight.position.set(0, HALL_HEIGHT - 5, -50);
+                    spotLight.target = photo;
 
-                    resolve([frame, photo]);
+                    resolve([photo, frameMesh, spotLight]);
 
                 },
                 // onProgress callback currently not supported
@@ -248,6 +299,41 @@ const AaaThree = (function () {
             );
         })
     }
+
+    const makeFrameGeometry = function (frameX: number, frameY: number) {
+
+        let frameOuterX = frameX / 2 + 1;
+        let frameOuterY = frameY / 2 + 1
+        let frameinnerX = frameX / 2;
+        let frameinnerY = frameY / 2;
+        const frameShape = new THREE.Shape([
+            new THREE.Vector2(-frameOuterX, frameOuterY),
+            new THREE.Vector2(frameOuterX, frameOuterY),
+            new THREE.Vector2(frameOuterX, -frameOuterY),
+            new THREE.Vector2(-frameOuterX, -frameOuterY)
+        ]);
+
+        const frameHole = new THREE.Path([
+            new THREE.Vector2(-frameinnerX, frameinnerY),
+            new THREE.Vector2(frameinnerX, frameinnerY),
+            new THREE.Vector2(frameinnerX, -frameinnerY),
+            new THREE.Vector2(-frameinnerX, -frameinnerY)
+        ])
+
+        frameShape.holes = [frameHole]
+
+        const extrudeSettings = {
+            amount: 0.5,
+            bevelEnabled: false,
+            bevelSegments: 1,
+            steps: 1,
+            bevelSize: 1,
+            bevelThickness: 1
+        };
+
+        return new THREE.ExtrudeBufferGeometry(frameShape, extrudeSettings);
+    }
+
 
 
     const moveCamera = function (forward: number, right: number) {
