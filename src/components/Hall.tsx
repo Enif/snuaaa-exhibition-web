@@ -1,5 +1,4 @@
 import React, { useRef, useCallback, useEffect, MouseEvent, TouchEvent } from 'react';
-import './example.css';
 import AaaThree from '../three/AaaThree';
 
 function Hall() {
