@@ -3,6 +3,7 @@ import { BufferAttribute } from 'three';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
 import { RectAreaLightHelper } from 'three/examples/jsm/helpers/RectAreaLightHelper.js'
 import testImg from '../assets/imgs/test.jpg';
+import AaaControls from './AaaThreeControl';
 
 const SPEED = 1;
 const SPEED_ROTATE = 0.005;
@@ -80,22 +81,19 @@ const AaaThree = (function () {
 
     const scene = new THREE.Scene();
     const renderer = new THREE.WebGLRenderer({ antialias: true });
-    
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
-    const pitchObject = new THREE.Object3D();
-    const yawObject = new THREE.Object3D();
-    pitchObject.add(camera);
-    yawObject.add(pitchObject);
-    yawObject.position.y = 20;
+
 
     const wallObjects: THREE.Mesh[] = [];
     const photoObjects: THREE.Object3D[] = [];
-    const raycaster = new THREE.Raycaster();
+
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
+    const aaaControl = new AaaControls(camera, wallObjects);
+    aaaControl.yawObject.position.y = 20;
+
     const mouse = new THREE.Vector2();
     const stats = Stats();
 
     function init(targetElement: HTMLDivElement) {
-
 
         scene.background = new THREE.Color('#000e2c');
         // scene.fog = new THREE.Fog(0xffffff, 0, 750);
@@ -111,7 +109,7 @@ const AaaThree = (function () {
                 scene.add(photoObject);
             });
 
-        scene.add(yawObject);
+        scene.add(aaaControl.yawObject);
         // scene.add(camera);
         scene.add(...lights);
         scene.add(floor);
@@ -371,36 +369,6 @@ const AaaThree = (function () {
         return new THREE.ShapeGeometry(frameShape);
     }
 
-
-
-    const moveCamera = function (forward: number, right: number) {
-
-        const dx = forward * getCameraDirection().x - right * getCameraDirection().z;
-        const dz = forward * getCameraDirection().z + right * getCameraDirection().x;
-
-        const moveDirection = new THREE.Vector3(dx, 0, dz)
-        raycaster.set(yawObject.position, moveDirection.normalize());
-        const intersections = raycaster.intersectObjects(wallObjects)
-
-        if (!intersections[0] || intersections[0].distance > 20) {
-            yawObject.position.x += dx;
-            yawObject.position.z += dz;
-        }
-    }
-
-    const rotateCamera = function (dx: number, dy: number, dz: number) {
-        yawObject.rotation.y -= dy;
-        pitchObject.rotation.x += dx;
-    }
-
-    const getCameraDirection = function () {
-        let direction = new THREE.Vector3(0, 0, -1);
-        let roatation = new THREE.Euler(0, 0, 0, 'XYZ');
-        roatation.set(pitchObject.rotation.x, yawObject.rotation.y, 0);
-        direction.applyEuler(roatation);
-        return direction;
-    }
-
     function onWindowResize() {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
@@ -411,23 +379,23 @@ const AaaThree = (function () {
         requestAnimationFrame(animate);
         // console.log('animate')
         if (Moving.getMoveLeft()) {
-            moveCamera(0, -SPEED);
+            aaaControl.moveCamera(0, -SPEED);
         }
         if (Moving.getMoveRight()) {
-            moveCamera(0, SPEED);
+            aaaControl.moveCamera(0, SPEED);
         }
         if (Moving.getMoveForward()) {
-            moveCamera(SPEED, 0);
+            aaaControl.moveCamera(SPEED, 0);
         }
         if (Moving.getMoveBackward()) {
-            moveCamera(-SPEED, 0);
+            aaaControl.moveCamera(-SPEED, 0);
         }
         if (Moving.getRotation()) {
 
             let division = Moving.getRotation() > 0
                 ? Math.floor(Moving.getRotation() * 9 / 10)
                 : Math.ceil(Moving.getRotation() * 9 / 10);
-            rotateCamera(0, (Moving.getRotation() - division) * SPEED_ROTATE, 0)
+            aaaControl.rotateCamera(0, (Moving.getRotation() - division) * SPEED_ROTATE, 0)
             Moving.setRotation(division)
         }
 
