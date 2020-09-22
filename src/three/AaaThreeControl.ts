@@ -24,10 +24,10 @@ class AaaControls {
         this.raycaster.set(this.yawObject.position, moveDirection.normalize());
         const intersections = this.raycaster.intersectObjects(this.wallObjects)
 
-        if (!intersections[0] || intersections[0].distance > 20) {
+        // if (!intersections[0] || intersections[0].distance > 20) {
             this.yawObject.position.x += dx;
             this.yawObject.position.z += dz;
-        }
+        // }
     }
 
     rotateCamera (dx: number, dy: number, dz: number) {

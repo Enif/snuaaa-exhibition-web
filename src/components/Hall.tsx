@@ -1,5 +1,7 @@
-import React, { useRef, useCallback, useEffect, MouseEvent, TouchEvent } from 'react';
+import React, { useRef, useCallback, useEffect, MouseEvent, TouchEvent, useState } from 'react';
 import AaaThree from '../three/AaaThree';
+import PhotoType from '../types/PhotoType';
+import PhotoService from '../services/PhotoService';
 
 function Hall() {
 
@@ -7,15 +9,25 @@ function Hall() {
     let isMoving = false;
     let mouseX = 0;
 
+    const [photos, setPhotos] = useState<PhotoType[]>([]);
+
     useEffect(() => {
         if (blockerTarget.current) {
             AaaThree.init(blockerTarget.current);
             AaaThree.animate();
             document.addEventListener('keydown', onKeyDown, false);
             document.addEventListener('keyup', onKeyUp, false)
+
+            PhotoService.retrievePhotos()
+            .then((photos) => setPhotos(photos.data))
         }
     }, [])
 
+    useEffect(() => {
+        photos.forEach((photo) => {
+            AaaThree.makePhoto(photo)
+        })
+    }, [photos])
 
     const onKeyDown = function (event: KeyboardEvent) {
 
@@ -91,7 +103,7 @@ function Hall() {
         mouseX = e.clientX;
     }
 
-    const onMouseOut = function() {
+    const onMouseOut = function () {
         isMoving = false;
     }
 
