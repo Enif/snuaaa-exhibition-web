@@ -2,6 +2,8 @@ import React, { useRef, useCallback, useEffect, MouseEvent, TouchEvent, useState
 import AaaThree from '../three/AaaThree';
 import PhotoType from '../types/PhotoType';
 import PhotoService from '../services/PhotoService';
+import PhotoDetail from './PhotoDetail';
+import usePhoto from '../hooks/usePhoto';
 
 function Hall() {
 
@@ -9,7 +11,7 @@ function Hall() {
     let isMoving = false;
     let mouseX = 0;
 
-    const [photos, setPhotos] = useState<PhotoType[]>([]);
+    const { photos, selectedPhoto, setPhotos, selectPhoto } = usePhoto();
 
     useEffect(() => {
         if (blockerTarget.current) {
@@ -19,15 +21,21 @@ function Hall() {
             document.addEventListener('keyup', onKeyUp, false)
 
             PhotoService.retrievePhotos()
-            .then((photos) => setPhotos(photos.data))
+                .then((photos) => setPhotos(photos.data))
         }
     }, [])
 
     useEffect(() => {
+        console.log(photos)
+
         photos.forEach((photo) => {
-            AaaThree.makePhoto(photo)
+            AaaThree.makePhoto(photo, onPhotoClick)
         })
     }, [photos])
+
+    const onPhotoClick = function (photo_id: number) {
+        selectPhoto(photo_id);
+    }
 
     const onKeyDown = function (event: KeyboardEvent) {
 
@@ -127,44 +135,50 @@ function Hall() {
 
 
     return (
-        <div id="blocker"
-            ref={blockerTarget}
-            onMouseDown={onMouseDown}
-            onMouseUp={onMouseUp}
-            onMouseMove={onMouseMove}
-            onMouseOut={onMouseOut}
-            onTouchStart={onTouchStart}
-            onTouchEnd={onTouchEnd}
-            onTouchMove={onTouchMove}>
-            <div className="controls-wrapper">
-                <button
-                    className="controls-btn"
-                    onTouchStart={() => AaaThree.setMoveLeft(true)}
-                    onTouchEnd={() => AaaThree.setMoveLeft(false)}>
-                    <i className="ri-arrow-left-s-line"></i>
-                </button>
-                <div className="controls-vertical">
+        <>
+            <div id="blocker"
+                ref={blockerTarget}
+                onMouseDown={onMouseDown}
+                onMouseUp={onMouseUp}
+                onMouseMove={onMouseMove}
+                onMouseOut={onMouseOut}
+                onTouchStart={onTouchStart}
+                onTouchEnd={onTouchEnd}
+                onTouchMove={onTouchMove}>
+                <div className="controls-wrapper">
                     <button
                         className="controls-btn"
-                        onTouchStart={() => AaaThree.setMoveForward(true)}
-                        onTouchEnd={() => AaaThree.setMoveForward(false)}>
-                        <i className="ri-arrow-up-s-line"></i>
+                        onTouchStart={() => AaaThree.setMoveLeft(true)}
+                        onTouchEnd={() => AaaThree.setMoveLeft(false)}>
+                        <i className="ri-arrow-left-s-line"></i>
                     </button>
+                    <div className="controls-vertical">
+                        <button
+                            className="controls-btn"
+                            onTouchStart={() => AaaThree.setMoveForward(true)}
+                            onTouchEnd={() => AaaThree.setMoveForward(false)}>
+                            <i className="ri-arrow-up-s-line"></i>
+                        </button>
+                        <button
+                            className="controls-btn"
+                            onTouchStart={() => AaaThree.setMoveBackward(true)}
+                            onTouchEnd={() => AaaThree.setMoveBackward(false)}>
+                            <i className="ri-arrow-down-s-line"></i>
+                        </button>
+                    </div>
                     <button
                         className="controls-btn"
-                        onTouchStart={() => AaaThree.setMoveBackward(true)}
-                        onTouchEnd={() => AaaThree.setMoveBackward(false)}>
-                        <i className="ri-arrow-down-s-line"></i>
+                        onTouchStart={() => AaaThree.setMoveRight(true)}
+                        onTouchEnd={() => AaaThree.setMoveRight(false)}>
+                        <i className="ri-arrow-right-s-line"></i>
                     </button>
                 </div>
-                <button
-                    className="controls-btn"
-                    onTouchStart={() => AaaThree.setMoveRight(true)}
-                    onTouchEnd={() => AaaThree.setMoveRight(false)}>
-                    <i className="ri-arrow-right-s-line"></i>
-                </button>
             </div>
-        </div>
+            {
+                selectedPhoto &&
+                <PhotoDetail close={() => selectPhoto(-1)} />
+            }
+        </>
     )
 }
 

@@ -1,17 +1,18 @@
 import * as THREE from 'three';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
-import { RectAreaLightHelper } from 'three/examples/jsm/helpers/RectAreaLightHelper.js'
-import testImg from '../assets/imgs/test.jpg';
-import ceilingImg from '../assets/imgs/ceiling.jpg';
+// import { RectAreaLightHelper } from 'three/examples/jsm/helpers/RectAreaLightHelper.js'
+import ceilingImg from '../assets/imgs/ceiling.png';
 import AaaControls from './AaaThreeControl';
 import PhotoType from '../types/PhotoType';
 
 const SPEED = 1;
 const SPEED_ROTATE = 0.005;
 const HALL_HEIGHT = 80;
-const HALL_SIZE_X = 200;
-const HALL_SIZE_Y = 200;
+const HALL_SIZE_X = 400;
+const HALL_SIZE_Y = 400;
 const PHOTO_HEIGHT = 25;
+const POINTLIGHT_INTENSITY = 0.2
+const HEMISPHERELIGHT_INTENSITY = 0.3;
 
 const SERVER_URL = process.env.REACT_APP_API_SERVER_URL;
 
@@ -82,7 +83,7 @@ const AaaThree = (function () {
     const wallObjects: THREE.Mesh[] = [];
     const photoObjects: THREE.Object3D[] = [];
 
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 2000);
     const aaaControl = new AaaControls(camera, wallObjects);
     aaaControl.yawObject.position.y = 20;
 
@@ -136,6 +137,7 @@ const AaaThree = (function () {
         floorGeometry.rotateX(- Math.PI / 2);
 
         const floorMaterial = new THREE.MeshPhysicalMaterial({
+            color: new THREE.Color('#999999')
         });
         const floor = new THREE.Mesh(floorGeometry, floorMaterial);
         floor.name = "floorMesh";
@@ -153,7 +155,7 @@ const AaaThree = (function () {
                     // const frameX = imageBitmap.width / 100;
                     // const frameY = imageBitmap.height / 100;
                     let texture = new THREE.CanvasTexture(imageBitmap);
-                    let ceilingGeometry = new THREE.SphereBufferGeometry(HALL_SIZE_X / Math.SQRT2, 32, 32, 0, 2 * Math.PI, 0, 0.5 * Math.PI);
+                    let ceilingGeometry = new THREE.SphereBufferGeometry(HALL_SIZE_X * 2, 32, 32, 0, 2 * Math.PI, 0, 0.5 * Math.PI);
                     // ceilingGeometry.rotateX(Math.PI / 2);
 
                     const ceilingMaterial = new THREE.MeshBasicMaterial({
@@ -164,7 +166,7 @@ const AaaThree = (function () {
                     });
                     // ceilingMaterial.color.setRGB(1, 1, 1);
                     const ceiling = new THREE.Mesh(ceilingGeometry, ceilingMaterial);
-                    ceiling.position.set(0, HALL_HEIGHT, 0);
+                    ceiling.position.set(0, 0, 0);
                     ceiling.name = "ceilingMesh";
 
                     resolve(ceiling)
@@ -180,13 +182,13 @@ const AaaThree = (function () {
     const makeLights = function () {
         const lights: THREE.Light[] = [];
 
-        const hemisphereLight = new THREE.HemisphereLight(0xeeeeff, 0x777788, 0.5);
+        const hemisphereLight = new THREE.HemisphereLight(0xeeeeff, 0x777788, HEMISPHERELIGHT_INTENSITY);
         hemisphereLight.position.set(0, 10, 0);
-        // lights.push(hemisphereLight);
+        lights.push(hemisphereLight);
 
-        const rectLight = new THREE.RectAreaLight(0xffffff, 10, 15, 15);
-        rectLight.position.set(0, HALL_HEIGHT - 0.1, -80);
-        rectLight.rotation.set(- Math.PI / 2, 0, 0);
+        // const rectLight = new THREE.RectAreaLight(0xffffff, 10, 15, 15);
+        // rectLight.position.set(0, HALL_HEIGHT - 0.1, -80);
+        // rectLight.rotation.set(- Math.PI / 2, 0, 0);
         // const rectLightHelper = new RectAreaLightHelper(rectLight);
         // rectLight.add(rectLightHelper);
         // lights.push(rectLight);
@@ -201,7 +203,6 @@ const AaaThree = (function () {
 
     const makePointLights = function (spaceX: number, spaceY: number, distance: number) {
 
-        const PointLightintensity = 0.05
 
         // const mX = Math.ceil((spaceX / 2) / distance);
         // const mY = Math.ceil((spaceY / 2) / distance);
@@ -215,16 +216,16 @@ const AaaThree = (function () {
 
         //     }
         // }
-        let pointLight = new THREE.PointLight(0xffffff, PointLightintensity, 500);
+        let pointLight = new THREE.PointLight(0xffffff, POINTLIGHT_INTENSITY, 500);
         pointLight.position.set(-spaceX / 6, HALL_HEIGHT / 2, -spaceY / 6);
 
-        let pointLight2 = new THREE.PointLight(0xffffff, PointLightintensity, 500);
+        let pointLight2 = new THREE.PointLight(0xffffff, POINTLIGHT_INTENSITY, 500);
         pointLight2.position.set(-spaceX / 6, HALL_HEIGHT / 2, spaceY / 6);
 
-        let pointLight3 = new THREE.PointLight(0xffffff, PointLightintensity, 500);
+        let pointLight3 = new THREE.PointLight(0xffffff, POINTLIGHT_INTENSITY, 500);
         pointLight3.position.set(spaceX / 6, HALL_HEIGHT / 2, -spaceY / 6);
 
-        let pointLight4 = new THREE.PointLight(0xffffff, PointLightintensity, 500);
+        let pointLight4 = new THREE.PointLight(0xffffff, POINTLIGHT_INTENSITY, 500);
         pointLight4.position.set(spaceX / 6, HALL_HEIGHT / 2, spaceY / 6);
 
         return [pointLight, pointLight2, pointLight3, pointLight4];
@@ -261,7 +262,7 @@ const AaaThree = (function () {
         return walls
     }
 
-    const makePhoto = function (photoInfo: PhotoType) {
+    const makePhoto = function (photoInfo: PhotoType, onClick: (photo_id: number) => void) {
 
         const loader = new THREE.ImageBitmapLoader();
 
@@ -286,7 +287,16 @@ const AaaThree = (function () {
                 photo.name = `photoMesh${photoInfo.photo_id}`
                 photoObject.add(photo)
                 photo.addEventListener("click", (e: THREE.Event) => {
+                    onClick(photoInfo.photo_id)
                     console.log(`photoMesh${photoInfo.photo_id}`)
+                })
+                photo.addEventListener("mouseon", (e: THREE.Event) => {
+                    lineMesh.visible = true;
+                    document.body.style.cursor = "pointer"
+                })
+                photo.addEventListener("mouseout", (e: THREE.Event) => {
+                    lineMesh.visible = false;
+                    document.body.style.cursor = "grab"
                 })
 
                 const frameGeometry = makeFrameGeometry(frameX, frameY);
@@ -319,8 +329,6 @@ const AaaThree = (function () {
 
                 photoObjects.push(photoObject);
                 scene.add(photoObject);
-                // photoObjects.push(photoObject);
-                // scene.add(photoObject);
 
             },
             // onProgress callback currently not supported
@@ -446,21 +454,18 @@ const AaaThree = (function () {
         if (intersects && intersects[0]) {
             // let mesh = intersects[0].object as THREE.Mesh
             if (intersects[0].object.name.substring(0, 9) === 'photoMesh') {
-                // THREE.find
-                let photoMesh = scene.getObjectByName("photoLineMesh")
-                if (photoMesh) {
-                    photoMesh.visible = true;
-                    document.body.style.cursor = "pointer"
-                    // event.target && event.target.
-                }
+                // THREE.find\
+                intersects[0].object.dispatchEvent({
+                    type: "mouseon"
+                })
             }
         }
         else {
-            let photoMesh = scene.getObjectByName("photoLineMesh")
-            if (photoMesh) {
-                photoMesh.visible = false
-                document.body.style.cursor = "grab"
-            }
+            photos.forEach((photo => {
+                photo.dispatchEvent({
+                    type: "mouseout"
+                })
+            }))
         }
     }
 
