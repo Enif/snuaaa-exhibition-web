@@ -1,9 +1,11 @@
 import * as THREE from 'three';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
 // import { RectAreaLightHelper } from 'three/examples/jsm/helpers/RectAreaLightHelper.js'
+
 import ceilingImg from '../assets/imgs/ceiling.png';
 import AaaControls from './AaaThreeControl';
 import PhotoType from '../types/PhotoType';
+import wallsInfo from './AaaThreeWalls';
 
 const SPEED = 1;
 const SPEED_ROTATE = 0.005;
@@ -12,7 +14,7 @@ const HALL_SIZE_X = 400;
 const HALL_SIZE_Y = 400;
 const PHOTO_HEIGHT = 25;
 const POINTLIGHT_INTENSITY = 0.2
-const HEMISPHERELIGHT_INTENSITY = 0.3;
+const HEMISPHERELIGHT_INTENSITY = 0.8;
 
 const SERVER_URL = process.env.REACT_APP_API_SERVER_URL;
 
@@ -82,10 +84,12 @@ const AaaThree = (function () {
 
     const wallObjects: THREE.Mesh[] = [];
     const photoObjects: THREE.Object3D[] = [];
+    // const flllrObjects: THREE.Object3D[] = 
 
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 2000);
     const aaaControl = new AaaControls(camera, wallObjects);
     aaaControl.yawObject.position.y = 20;
+    aaaControl.yawObject.position.z = 150;
 
     const mouse = new THREE.Vector2();
     const stats = Stats();
@@ -103,18 +107,10 @@ const AaaThree = (function () {
             })
         const lights = makeLights();
 
-        // makePhoto(testImg, 0)
-        //     .then((photoObject) => {
-        //         photoObjects.push(photoObject);
-        //         scene.add(photoObject);
-        //     });
-
         scene.add(aaaControl.yawObject);
-        // scene.add(camera);
         scene.add(...lights);
         scene.add(floor);
         scene.add(...walls);
-        // scene.add(ceiling);
 
         wallObjects.push(...walls);
 
@@ -136,7 +132,7 @@ const AaaThree = (function () {
         const floorGeometry = new THREE.PlaneBufferGeometry(2000, 2000);
         floorGeometry.rotateX(- Math.PI / 2);
 
-        const floorMaterial = new THREE.MeshPhysicalMaterial({
+        const floorMaterial = new THREE.MeshPhongMaterial({
             color: new THREE.Color('#999999')
         });
         const floor = new THREE.Mesh(floorGeometry, floorMaterial);
@@ -193,9 +189,13 @@ const AaaThree = (function () {
         // rectLight.add(rectLightHelper);
         // lights.push(rectLight);
 
+        const directionLight = new THREE.DirectionalLight(0xeeeeff, 0.2);
+        directionLight.position.set(600, 400, 200);
+        lights.push(directionLight)
+
         const pointLights = makePointLights(HALL_SIZE_X, HALL_SIZE_Y, 100);
         // console.dir(pointLights);
-        lights.push(...pointLights);
+        // lights.push(...pointLights);
 
 
         return lights;
@@ -216,50 +216,44 @@ const AaaThree = (function () {
 
         //     }
         // }
-        let pointLight = new THREE.PointLight(0xffffff, POINTLIGHT_INTENSITY, 500);
+        // let pointLight = new THREE.PointLight(0xffffff, 3 * POINTLIGHT_INTENSITY, 200);
+        // pointLight.position.set(-25, HALL_HEIGHT / 2, 0);
+
+        let pointLight = new THREE.PointLight(0xffffff, POINTLIGHT_INTENSITY, 100);
         pointLight.position.set(-spaceX / 6, HALL_HEIGHT / 2, -spaceY / 6);
 
-        let pointLight2 = new THREE.PointLight(0xffffff, POINTLIGHT_INTENSITY, 500);
+        let pointLight2 = new THREE.PointLight(0xffffff, POINTLIGHT_INTENSITY, 100);
         pointLight2.position.set(-spaceX / 6, HALL_HEIGHT / 2, spaceY / 6);
 
-        let pointLight3 = new THREE.PointLight(0xffffff, POINTLIGHT_INTENSITY, 500);
+        let pointLight3 = new THREE.PointLight(0xffffff, POINTLIGHT_INTENSITY, 100);
         pointLight3.position.set(spaceX / 6, HALL_HEIGHT / 2, -spaceY / 6);
 
-        let pointLight4 = new THREE.PointLight(0xffffff, POINTLIGHT_INTENSITY, 500);
+        let pointLight4 = new THREE.PointLight(0xffffff, POINTLIGHT_INTENSITY, 100);
         pointLight4.position.set(spaceX / 6, HALL_HEIGHT / 2, spaceY / 6);
+        // return [pointLight];
 
         return [pointLight, pointLight2, pointLight3, pointLight4];
     }
 
     const makeWall = function () {
-        const boxGeometry = new THREE.BoxBufferGeometry(10, HALL_HEIGHT, HALL_SIZE_X);
         const boxMaterial = new THREE.MeshPhysicalMaterial({
             flatShading: true,
+
             dithering: true,
             color: new THREE.Color('#ffffff')
         });
 
-        const walls = [];
+        // const walls = [];
 
-        walls[0] = new THREE.Mesh(boxGeometry, boxMaterial);
-        walls[0].position.set(HALL_SIZE_X / 2, HALL_HEIGHT / 2, 0);
-        walls[0].name = "wall0"
+        return wallsInfo.map((wallInfo, idx) => {
+            const boxGeometry = new THREE.BoxBufferGeometry(wallInfo.length, HALL_HEIGHT, 10);
 
-        walls[1] = new THREE.Mesh(boxGeometry, boxMaterial);
-        walls[1].position.set(-HALL_SIZE_X / 2, HALL_HEIGHT / 2, 0);
-        walls[1].name = "wall1"
-
-        walls[2] = new THREE.Mesh(boxGeometry, boxMaterial);
-        walls[2].position.set(0, HALL_HEIGHT / 2, HALL_SIZE_X / 2);
-        walls[2].rotation.set(0, Math.PI / 2, 0);
-        walls[2].name = "wall2"
-
-        walls[3] = new THREE.Mesh(boxGeometry, boxMaterial);
-        walls[3].position.set(0, HALL_HEIGHT / 2, -HALL_SIZE_X / 2);
-        walls[3].rotation.set(0, Math.PI / 2, 0);
-        walls[3].name = "wall3"
-
-        return walls
+            const wall = new THREE.Mesh(boxGeometry, boxMaterial);
+            wall.position.set(wallInfo.xPosition, HALL_HEIGHT / 2 - 10, wallInfo.zPosition);
+            wall.rotation.set(0, wallInfo.rotation, 0);
+            wall.name = `wall${idx}`
+            return wall
+        })
     }
 
     const makePhoto = function (photoInfo: PhotoType, onClick: (photo_id: number) => void) {
@@ -326,6 +320,7 @@ const AaaThree = (function () {
                 photoObject.add(spotLight);
 
                 photoObject.position.set(photoInfo.xPos, 0, photoInfo.zPos);
+                photoObject.rotation.y += photoInfo.rotation / 180 * Math.PI;
 
                 photoObjects.push(photoObject);
                 scene.add(photoObject);
@@ -443,6 +438,7 @@ const AaaThree = (function () {
         const mouseRayCaster = new THREE.Raycaster();
 
         mouseRayCaster.setFromCamera(mouse, camera);
+        mouseRayCaster.far = 150;
 
         let photos = photoObjects
             .map(photoObject => photoObject.children
@@ -477,6 +473,7 @@ const AaaThree = (function () {
         const mouseRayCaster = new THREE.Raycaster();
 
         mouseRayCaster.setFromCamera(mouse, camera);
+        mouseRayCaster.far = 150;
 
         let photos = photoObjects
             .map(photoObject => photoObject.children

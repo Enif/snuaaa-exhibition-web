@@ -106,8 +106,9 @@ function Hall() {
 
     const onMouseMove = function (e: MouseEvent) {
         if (isMoving) {
-            AaaThree.addRotation((mouseX - e.clientX))
+            AaaThree.addRotation((-0.2 * e.movementX))
         }
+
         mouseX = e.clientX;
     }
 
