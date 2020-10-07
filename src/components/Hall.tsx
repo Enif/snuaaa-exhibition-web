@@ -22,6 +22,9 @@ function Hall() {
 
             PhotoService.retrievePhotos()
                 .then((photos) => setPhotos(photos.data))
+                .catch((err) => {
+                    console.error(err)
+                })
         }
     }, [])
 
