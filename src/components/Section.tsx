@@ -9,36 +9,32 @@ import useAuth from '../hooks/useAuth';
 import { getToken } from '../utils/TokenManager';
 
 function Section() {
-
     const { auth, setAuth } = useAuth();
     const history = useHistory();
     const location = useLocation();
 
-    useEffect(() => {
-        checkToken();
-    }, [])
 
     useEffect(() => {
         checkLocation()
     }, [history, auth])
 
-    const checkToken = function () {
-        const accessToken = getToken();
-        if (accessToken) {
-            const payload: any = jsonwebtoken.decode(accessToken)
-            setAuth({
-                user_id: payload.user_id,
-                nickname: payload.nickname
-            })
-        }
-    }
 
     const checkLocation = function () {
-
-        if (!auth.user_id && location.pathname === "/hall") {
-            history.replace("/")
+        console.log('checkLocation')
+        if (!auth.user_id) {
+            const accessToken = getToken();
+            if (accessToken) {
+                const payload: any = jsonwebtoken.decode(accessToken)
+                setAuth({
+                    user_id: payload.user_id,
+                    nickname: payload.nickname
+                })
+            }
+            else if (location.pathname === "/hall") {
+                history.replace("/")
+            };
         }
-        else if (auth.user_id && location.pathname === "/") {
+        else if (location.pathname === "/") {
             history.replace("/hall")
         }
 
