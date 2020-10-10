@@ -7,6 +7,7 @@
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
     "@types/jest": "^24.9.1",
+    "@types/jsonwebtoken": "^8.5.0",
     "@types/node": "^12.12.54",
     "@types/react": "^16.9.48",
     "@types/react-dom": "^16.9.8",
@@ -14,6 +15,7 @@
     "@types/react-router": "^5.1.8",
     "@types/react-router-dom": "^5.1.5",
     "axios": "^0.20.0",
+    "jsonwebtoken": "^8.5.1",
     "moment": "^2.29.0",
     "node-sass": "^4.14.1",
     "react": "^16.13.1",
@@ -23,9 +25,11 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.3",
     "redux": "^4.0.5",
+    "redux-devtools-extension": "^2.13.8",
     "remixicon": "^2.5.0",
     "three": "^0.120.0",
-    "typescript": "^3.7.5"
+    "typescript": "^3.7.5",
+    "universal-cookie": "^4.0.4"
   },
   "scripts": {
     "start": "react-scripts start",

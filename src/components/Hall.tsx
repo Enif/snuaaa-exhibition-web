@@ -1,17 +1,18 @@
-import React, { useRef, useCallback, useEffect, MouseEvent, TouchEvent, useState } from 'react';
+import React, { useRef, useEffect, MouseEvent, TouchEvent } from 'react';
 import AaaThree from '../three/AaaThree';
-import PhotoType from '../types/PhotoType';
 import PhotoService from '../services/PhotoService';
 import PhotoDetail from './PhotoDetail';
 import usePhoto from '../hooks/usePhoto';
 
 function Hall() {
 
+    console.log('[Hall]')
     const blockerTarget = useRef<HTMLDivElement>(null);
     let isMoving = false;
     let mouseX = 0;
 
     const { photos, selectedPhoto, setPhotos, selectPhoto } = usePhoto();
+
 
     useEffect(() => {
         if (blockerTarget.current) {
@@ -29,8 +30,6 @@ function Hall() {
     }, [])
 
     useEffect(() => {
-        console.log(photos)
-
         photos.forEach((photo) => {
             AaaThree.makePhoto(photo, onPhotoClick)
         })

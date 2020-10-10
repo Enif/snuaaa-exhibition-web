@@ -1,9 +1,10 @@
 import { combineReducers } from 'redux';
 import photoReducer from './photoReducer';
+import authReducer from './authReducer';
 
 const rootReducer = combineReducers({
     photoReducer,
-    // product
+    authReducer
 });
 
 export default rootReducer;

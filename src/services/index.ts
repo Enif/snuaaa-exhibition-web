@@ -1,9 +1,9 @@
-import axios, { AxiosResponse, AxiosPromise } from 'axios';
-// import { getToken } from '../utils/tokenManager';
+import axios, { AxiosPromise } from 'axios';
+import { getToken } from '../utils/TokenManager';
 
 const SERVER_URL = process.env.REACT_APP_API_SERVER_URL;
 
-// axios.defaults.headers.common['Authorization'] = 'Bearer ' + getToken();
+axios.defaults.headers.common['Authorization'] = 'Bearer ' + getToken();
 
 const BaseService = {
  
