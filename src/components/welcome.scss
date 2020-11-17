@@ -24,26 +24,43 @@
     flex-direction: column;
     align-items: center;
     width: 40rem;
-    height: 50%;
+    min-height: 50%;
     background-color: rgba(12, 27, 62, 0.82);
     color: white;
     border-radius: 1rem;
+    padding: 1rem;
+    @media screen and (max-width: 800px) {
+      padding: 0.5rem;
+    }
     // box-shadow: 0px 0px 10px 10px rgba(255, 255, 255, 0.5);
     p {
-        display: block;
-        text-align: center;
-        margin: 2rem;
-        font-size: 1.3rem;
-        line-height: 1.5;
+      display: block;
+      text-align: center;
+      margin: 1rem;
+      font-size: 1.3rem;
+      line-height: 1.5;
+      @media screen and (max-width: 800px) {
+        font-size: 1rem;
+      }
     }
     .btn-google {
-        background: transparent;
-        // background-color: #FFFFFF;
-        // border: 1px solid #CCCCCC;
-        // padding: 1rem;
-        border: none;
-        // border-radius: 0.5rem;
+      background: transparent;
+      // background-color: #FFFFFF;
+      // border: 1px solid #CCCCCC;
+      // padding: 1rem;
+      border: none;
+      // border-radius: 0.5rem;
     }
-    // h4 
+    // h4
+  }
+  .intro-footer {
+    margin-top: auto;
+
+  }
+  .background-copyright {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    color: white;
   }
 }

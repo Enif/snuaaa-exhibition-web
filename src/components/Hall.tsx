@@ -1,18 +1,19 @@
-import React, { useRef, useEffect, MouseEvent, TouchEvent } from 'react';
+import React, { useRef, useEffect, MouseEvent, TouchEvent, useState } from 'react';
 import AaaThree from '../three/AaaThree';
 import PhotoService from '../services/PhotoService';
 import PhotoDetail from './PhotoDetail';
 import usePhoto from '../hooks/usePhoto';
+import './hall.scss';
+import GuestBook from './GuestBook';
 
 function Hall() {
 
-    console.log('[Hall]')
     const blockerTarget = useRef<HTMLDivElement>(null);
     let isMoving = false;
     let mouseX = 0;
 
     const { photos, selectedPhoto, setPhotos, selectPhoto } = usePhoto();
-
+    const [isGuestBookPop, setIsGuestBookPop] = useState(false);
 
     useEffect(() => {
         if (blockerTarget.current) {
@@ -21,7 +22,7 @@ function Hall() {
             document.addEventListener('keydown', onKeyDown, false);
             document.addEventListener('keyup', onKeyUp, false)
 
-            PhotoService.retrievePhotos()
+            PhotoService.retrieveAll()
                 .then((photos) => setPhotos(photos.data))
                 .catch((err) => {
                     console.error(err)
@@ -148,6 +149,10 @@ function Hall() {
                 onTouchStart={onTouchStart}
                 onTouchEnd={onTouchEnd}
                 onTouchMove={onTouchMove}>
+                <button className="btn-general" onClick={() => setIsGuestBookPop(true)}>
+                    <i className="ri-draft-line"></i>
+                </button>
+
                 <div className="controls-wrapper">
                     <button
                         className="controls-btn"
@@ -180,6 +185,11 @@ function Hall() {
             {
                 selectedPhoto &&
                 <PhotoDetail close={() => selectPhoto(-1)} />
+            }
+            {
+                isGuestBookPop
+                &&
+                <GuestBook close={() => setIsGuestBookPop(false)} />
             }
         </>
     )

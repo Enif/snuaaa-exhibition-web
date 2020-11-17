@@ -4,11 +4,11 @@ import PhotoType from '../types/PhotoType';
 
 const PhotoService = {
 
-    retrievePhoto: function (photo_id: number): AxiosPromise<PhotoType> {
+    retrieve: function (photo_id: number): AxiosPromise<PhotoType> {
         return BaseService.get(`photo/${photo_id}`)
     },
 
-    retrievePhotos: function (): AxiosPromise<PhotoType[]> {
+    retrieveAll: function (): AxiosPromise<PhotoType[]> {
         return BaseService.get(`photo`)
     },
 }
