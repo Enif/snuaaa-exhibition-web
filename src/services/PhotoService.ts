@@ -11,6 +11,10 @@ const PhotoService = {
     retrieveAll: function (): AxiosPromise<PhotoType[]> {
         return BaseService.get(`photo`)
     },
+
+    vote: function (data: { photo_id: number }): AxiosPromise {
+        return BaseService.post(`photo/vote`, data)
+    }
 }
 
 export default PhotoService;

@@ -28,6 +28,10 @@ function PhotoDetail({ close }: PhotoDetailProps) {
             <div className="photo-detail-right">
                 <div className="photo-detail-infos-wrp">
                     <div className="photo-detail-info-unit">
+                        <i className="ri-image-line"></i>
+                        <p>{selectedPhoto.title}</p>
+                    </div>
+                    <div className="photo-detail-info-unit">
                         <i className="ri-user-fill"></i>
                         <p>{selectedPhoto.photograper}</p>
                     </div>

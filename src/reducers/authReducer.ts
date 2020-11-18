@@ -1,4 +1,5 @@
 import ExhibitionAuthType from "../types/ExhibitionAuthType";
+import { removeToken } from "../utils/TokenManager";
 
 const SET = 'auth/SET' as const;
 const RESET = 'auth/RESET' as const;
@@ -35,6 +36,7 @@ function authReducer(state: AuthState = initialState, action: AuthAction) {
                 auth: action.auth
             }
         case RESET:
+            removeToken();
             return {
                 ...initialState
             }

@@ -1,10 +1,17 @@
-.btn-general {
+.hall-btn-wrp {
   position: absolute;
   top: 1rem;
   right: 1rem;
+}
+
+.btn-general {
+  // position: absolute;
+  // top: 1rem;
+  // right: 1rem;
+  margin: 0.5rem;
   width: 3rem;
   height: 3rem;
-  font-size: 1rem;
+  font-size: 1.2rem;
   border: none;
   border-radius: 50%;
   outline: none;

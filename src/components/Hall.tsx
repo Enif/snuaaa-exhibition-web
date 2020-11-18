@@ -5,6 +5,7 @@ import PhotoDetail from './PhotoDetail';
 import usePhoto from '../hooks/usePhoto';
 import './hall.scss';
 import GuestBook from './GuestBook';
+import BallotBox from './BallotBox';
 
 function Hall() {
 
@@ -14,6 +15,7 @@ function Hall() {
 
     const { photos, selectedPhoto, setPhotos, selectPhoto } = usePhoto();
     const [isGuestBookPop, setIsGuestBookPop] = useState(false);
+    const [isBallotBoxPop, setIsBallotBoxPop] = useState(false);
 
     useEffect(() => {
         if (blockerTarget.current) {
@@ -149,9 +151,14 @@ function Hall() {
                 onTouchStart={onTouchStart}
                 onTouchEnd={onTouchEnd}
                 onTouchMove={onTouchMove}>
-                <button className="btn-general" onClick={() => setIsGuestBookPop(true)}>
-                    <i className="ri-draft-line"></i>
-                </button>
+                <div className="hall-btn-wrp">
+                    <button className="btn-general" onClick={() => setIsGuestBookPop(true)}>
+                        <i className="ri-draft-line"></i>
+                    </button>
+                    <button className="btn-general" onClick={() => setIsBallotBoxPop(true)}>
+                        <i className="ri-medal-line"></i>
+                    </button>
+                </div>
 
                 <div className="controls-wrapper">
                     <button
@@ -190,6 +197,11 @@ function Hall() {
                 isGuestBookPop
                 &&
                 <GuestBook close={() => setIsGuestBookPop(false)} />
+            }
+            {
+                isBallotBoxPop
+                &&
+                <BallotBox close={() => setIsBallotBoxPop(false)} />
             }
         </>
     )
