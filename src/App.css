@@ -74,3 +74,61 @@
     transform: rotate(360deg);
   }
 }
+
+.auth-wrapper {
+  width: 100%;
+  height: 100%;
+}
+
+.loading {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.863);
+}
+
+.loading-sun {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  background-color: rgb(255, 94, 0);
+  box-shadow: 0 0 15px 5px rgb(255, 0, 0);
+
+  /* top: 46%;
+  top: -webkit-calc(50% - 6px);
+  top: calc(50% - 6px);
+  left: 46%;
+  left: -webkit-calc(50% - 6px);
+  left: calc(50% - 6px); */
+  
+  border-radius: 25px;
+  -webkit-transform-origin:  50% 50%;
+          transform-origin:  50% 50% ;
+  -webkit-animation: loader-earth 3s linear infinite;
+          animation: loader-earth 3s linear infinite;
+}
+
+.loading-sun:before{
+  content: "";
+  position: absolute;
+  background-color: #0051ff;
+  top: 0px;
+  left: -75px;
+  height: 15px;
+  width: 15px;
+  border-radius: 15px;
+}
+
+@-webkit-keyframes loader-earth{
+  0%{-webkit-transform:rotate(0deg);}
+  /* 50%{-webkit-transform:rotate(180deg);} */
+  100%{-webkit-transform:rotate(360deg);}
+}
+
+@keyframes loader-earth{
+  0%{transform:rotate(0deg);}
+  /* 50%{transform:rotate(180deg);} */
+  100%{transform:rotate(360deg);}
+}

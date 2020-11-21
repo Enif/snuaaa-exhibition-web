@@ -9,10 +9,10 @@ import wallsInfo from './AaaThreeWalls';
 
 const SPEED = 1;
 const SPEED_ROTATE = 0.005;
-const HALL_HEIGHT = 80;
+const HALL_HEIGHT = 50;
 const HALL_SIZE_X = 400;
 const HALL_SIZE_Y = 400;
-const PHOTO_HEIGHT = 25;
+const PHOTO_HEIGHT = 20;
 const POINTLIGHT_INTENSITY = 0.2
 const HEMISPHERELIGHT_INTENSITY = 0.8;
 
@@ -88,7 +88,7 @@ const AaaThree = (function () {
 
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 2000);
     const aaaControl = new AaaControls(camera, wallObjects);
-    aaaControl.yawObject.position.y = 20;
+    aaaControl.yawObject.position.y = 150;
     aaaControl.yawObject.position.z = 150;
 
     const mouse = new THREE.Vector2();
@@ -106,11 +106,13 @@ const AaaThree = (function () {
                 scene.add(ceiling)
             })
         const lights = makeLights();
+        const entrance = makeEntrance();
 
         scene.add(aaaControl.yawObject);
         scene.add(...lights);
         scene.add(floor);
         scene.add(...walls);
+        scene.add(entrance)
 
         wallObjects.push(...walls);
 
@@ -246,7 +248,7 @@ const AaaThree = (function () {
         // const walls = [];
 
         return wallsInfo.map((wallInfo, idx) => {
-            const boxGeometry = new THREE.BoxBufferGeometry(wallInfo.length, HALL_HEIGHT, 10);
+            const boxGeometry = new THREE.BoxBufferGeometry(wallInfo.length, HALL_HEIGHT, 5);
 
             const wall = new THREE.Mesh(boxGeometry, boxMaterial);
             wall.position.set(wallInfo.xPosition, HALL_HEIGHT / 2 - 10, wallInfo.zPosition);
@@ -393,6 +395,44 @@ const AaaThree = (function () {
         frameShape.holes = [frameHole]
 
         return new THREE.ShapeGeometry(frameShape);
+    }
+
+    const makeEntrance = function () {
+        const entranceObject = new THREE.Object3D();
+
+        const boxMaterial = new THREE.MeshPhysicalMaterial({
+            flatShading: true,
+            dithering: true,
+            color: new THREE.Color('#ffffff')
+        });
+
+        const planeGeometry = new THREE.BoxBufferGeometry(60, 5, 60);
+        const floor = new THREE.Mesh(planeGeometry, boxMaterial);
+        floor.position.set(0, 0, 60);
+        const ceiling = new THREE.Mesh(planeGeometry, boxMaterial);
+        ceiling.position.set(0, 40, 60);
+        entranceObject.add(floor, ceiling);
+
+        const pillarGeometry = new THREE.CylinderGeometry(3, 3, 40, 32);
+        const pillar1 = new THREE.Mesh(pillarGeometry, boxMaterial);
+        pillar1.position.set(25, 20, 85);
+        const pillar2 = new THREE.Mesh(pillarGeometry, boxMaterial);
+        pillar2.position.set(25, 20, 35);
+        const pillar3 = new THREE.Mesh(pillarGeometry, boxMaterial);
+        pillar3.position.set(-25, 20, 85);
+        const pillar4 = new THREE.Mesh(pillarGeometry, boxMaterial);
+        pillar4.position.set(-25, 20, 35);
+        entranceObject.add(...[pillar1, pillar2, pillar3, pillar4])
+
+        const domeGeometry = new THREE.SphereBufferGeometry(30, 32, 32, 0, 2 * Math.PI, 0, 0.5 * Math.PI);
+        const dome = new THREE.Mesh(domeGeometry, boxMaterial);
+        dome.position.set(0, 42, 60);
+        entranceObject.add(dome)
+        
+        // wall.position.set(wallInfo.xPosition, HALL_HEIGHT / 2 - 10, wallInfo.zPosition);
+        // wall.rotation.set(0, wallInfo.rotation, 0);
+        // wall.name = `wall${idx}`
+        return entranceObject;
     }
 
     function onWindowResize() {

@@ -62,7 +62,12 @@ function AuthUser() {
                 auth.user_id ?
                     <Redirect to="/hall" />
                     :
-                    <div>Authenticating User....</div>
+                    <div className="loading">
+                        <div className="loading-sun">
+
+                        </div>
+                    </div>
+
             }
         </div>
     )
