@@ -1,5 +1,6 @@
 {
   "name": "snuaaa-exhibition-3d",
+  "homepage": "https://exhibition.snuaaa.net/",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

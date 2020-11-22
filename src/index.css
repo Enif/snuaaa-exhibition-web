@@ -13,7 +13,7 @@ body {
   height: 100%;
   font-size: 100%;
   line-height: 1;
-  font-family: 'IBMPlexSansKR-Regular', Arial, Tahoma, Verdana, sans-serif;
+  font-family: 'Minguk-Regular', Arial, Tahoma, Verdana, sans-serif;
 }
 
 article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section { display: block; }
@@ -24,7 +24,13 @@ blockquote:before, blockquote:after, q:before, q:after { content: ''; content: n
 strong { font-weight: bold; }
 
 input { outline: none; }
-button { cursor: pointer; }
+button {
+  cursor: pointer;
+  font-family: 'Minguk-Regular', Arial, Tahoma, Verdana, sans-serif;
+}
+textarea {
+  font-family: 'Minguk-Regular', Arial, Tahoma, Verdana, sans-serif;
+}
 table { border-collapse: collapse; border-spacing: 0; }
 img { border: 0; max-width: 100%; }
 
@@ -43,8 +49,8 @@ code {
 }
 
 @font-face {
-  font-family: "IBMPlexSansKR-Regular";
-  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-07@1.0/IBMPlexSansKR-Regular.woff") format("woff");
+  font-family: 'Minguk-Regular';
+  src: url('../src/assets/fonts/Minguk-Regular.woff') format('woff');
   font-weight: normal;
   font-style: normal;
 }

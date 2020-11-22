@@ -1,0 +1,145 @@
+#root {
+  height: 100%;
+  width: 100%;
+}
+
+.App {
+  height: 100%;
+  width: 100%;
+  font-family: "Minguk-Regular";
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+#blocker {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.controls-wrapper {
+  display: none;
+}
+
+@media screen and (max-width: 800px) {
+  .controls-wrapper {
+    display: flex;
+    position: absolute;
+    bottom: 0;
+    margin: 1rem 0;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
+  .controls-vertical {
+    display: flex;
+    flex-direction: column;
+  }
+  .controls-btn {
+    background-color: rgba(255, 255, 255, 0.3);
+    height: 3rem;
+    width: 3rem;
+    margin: 1rem;
+    border: none;
+    border: 1px solid rgba(199, 199, 199, 0.5);
+    border-radius: 50%;
+    transition: all 0.05s;
+  }
+  .controls-btn:focus {
+    outline: none;
+  }
+  .controls-btn:active {
+    background-color: rgba(255, 255, 255, 0.733);
+  }
+  .controls-btn i {
+    font-size: 1.5rem;
+
+  }
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.auth-wrapper {
+  width: 100%;
+  height: 100%;
+}
+
+.loading {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.863);
+}
+
+.loading-sun {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  background-color: rgb(255, 94, 0);
+  box-shadow: 0 0 15px 5px rgb(255, 0, 0);
+
+  /* top: 46%;
+  top: -webkit-calc(50% - 6px);
+  top: calc(50% - 6px);
+  left: 46%;
+  left: -webkit-calc(50% - 6px);
+  left: calc(50% - 6px); */
+  
+  border-radius: 25px;
+  -webkit-transform-origin:  50% 50%;
+          transform-origin:  50% 50% ;
+  -webkit-animation: loader-earth 3s linear infinite;
+          animation: loader-earth 3s linear infinite;
+}
+
+.loading-sun:before{
+  content: "";
+  position: absolute;
+  background-color: #0051ff;
+  top: 0px;
+  left: -75px;
+  height: 15px;
+  width: 15px;
+  border-radius: 15px;
+}
+
+@-webkit-keyframes loader-earth{
+  0%{-webkit-transform:rotate(0deg);}
+  /* 50%{-webkit-transform:rotate(180deg);} */
+  100%{-webkit-transform:rotate(360deg);}
+}
+
+@keyframes loader-earth{
+  0%{transform:rotate(0deg);}
+  /* 50%{transform:rotate(180deg);} */
+  100%{transform:rotate(360deg);}
+}
+
+.background-copyright {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  color: white;
+  text-shadow: 0 0 2px #000000;
+  @media screen and (max-width: 800px) {
+    font-size: 0.7rem;
+  }
+}

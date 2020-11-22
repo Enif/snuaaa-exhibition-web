@@ -21,10 +21,10 @@ function NicknameInput() {
     }
 
     return (
-        <div>
+        <div className="nickname-wrp">
             <p>방명록을 남기실 닉네임을 설정해주세요</p>
             <input type="text" value={nickname} onChange={(e) => setNickname(e.target.value)} />
-            <button onClick={() => updateUserNickname()}>확인</button>
+            <button onClick={() => updateUserNickname()}>설 정</button>
         </div>
     )
 }

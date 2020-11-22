@@ -2,19 +2,27 @@ import * as THREE from 'three';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
 // import { RectAreaLightHelper } from 'three/examples/jsm/helpers/RectAreaLightHelper.js'
 
-import ceilingImg from '../assets/imgs/ceiling.png';
+import ceilingImg from '../assets/imgs/ceiling_final.webp';
+// import ceilingImg from '../assets/imgs/kloppenheim_03.jpg';
+// import ceilingImg from '../assets/imgs/universe.webp';
 import AaaControls from './AaaThreeControl';
 import PhotoType from '../types/PhotoType';
 import wallsInfo from './AaaThreeWalls';
+import { HALL_SIZE_UNIT } from './AaaThreeConstant';
+
+import mingukFont from '../assets/fonts/Minguk-Regular.json';
+import arrowImg from '../assets/imgs/arrow.png';
 
 const SPEED = 1;
 const SPEED_ROTATE = 0.005;
-const HALL_HEIGHT = 50;
+const HALL_HEIGHT = 60;
 const HALL_SIZE_X = 400;
 const HALL_SIZE_Y = 400;
-const PHOTO_HEIGHT = 20;
-const POINTLIGHT_INTENSITY = 0.2
+const PHOTO_HEIGHT = 23;
+const POINTLIGHT_INTENSITY = 1;
 const HEMISPHERELIGHT_INTENSITY = 0.8;
+const FRAME_WIDTH = 0.5;
+const FRAME_SELECTOR_WIDTH = 0.3
 
 const SERVER_URL = process.env.REACT_APP_API_SERVER_URL;
 
@@ -25,6 +33,7 @@ const Moving = (function () {
     let moveForward = false;
     let moveBackward = false;
     let rotation = 0;
+    let blockMove = false;
 
     const setMoveLeft = function (isMove: boolean) {
         moveLeft = isMove;
@@ -44,6 +53,9 @@ const Moving = (function () {
     const addRotation = function (value: number) {
         rotation += value;
     }
+    const setBlockMove = function (isBlock: boolean) {
+        blockMove = isBlock;
+    }
     const getMoveLeft = function () {
         return moveLeft;
     }
@@ -59,6 +71,9 @@ const Moving = (function () {
     const getRotation = function () {
         return rotation;
     }
+    const getBlockMove = function () {
+        return blockMove;
+    }
 
     return {
         setMoveLeft: setMoveLeft,
@@ -67,11 +82,13 @@ const Moving = (function () {
         setMoveBackward: setMoveBackward,
         setRotation: setRotation,
         addRotation: addRotation,
+        setBlockMove: setBlockMove,
         getMoveLeft: getMoveLeft,
         getMoveRight: getMoveRight,
         getMoveForward: getMoveForward,
         getMoveBackward: getMoveBackward,
-        getRotation: getRotation
+        getRotation: getRotation,
+        getBlockMove: getBlockMove
     }
 })()
 
@@ -88,8 +105,10 @@ const AaaThree = (function () {
 
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 2000);
     const aaaControl = new AaaControls(camera, wallObjects);
-    aaaControl.yawObject.position.y = 150;
+    aaaControl.yawObject.position.y = 20;
     aaaControl.yawObject.position.z = 150;
+    // aaaControl.yawObject.position.y = 20;
+    // aaaControl.yawObject.position.z = 150;
 
     const mouse = new THREE.Vector2();
     const stats = Stats();
@@ -107,6 +126,8 @@ const AaaThree = (function () {
             })
         const lights = makeLights();
         const entrance = makeEntrance();
+        // makeWords();
+        makeArrow();
 
         scene.add(aaaControl.yawObject);
         scene.add(...lights);
@@ -126,7 +147,7 @@ const AaaThree = (function () {
         targetElement.addEventListener('mousemove', onMouseMove, false);
         targetElement.addEventListener('click', onMouseClick, false);
 
-        targetElement.appendChild(stats.dom);
+        // targetElement.appendChild(stats.dom);
 
     }
 
@@ -135,7 +156,8 @@ const AaaThree = (function () {
         floorGeometry.rotateX(- Math.PI / 2);
 
         const floorMaterial = new THREE.MeshPhongMaterial({
-            color: new THREE.Color('#999999')
+            color: new THREE.Color('#203947'),
+            // specular: '#AAAAAA'
         });
         const floor = new THREE.Mesh(floorGeometry, floorMaterial);
         floor.name = "floorMesh";
@@ -191,7 +213,7 @@ const AaaThree = (function () {
         // rectLight.add(rectLightHelper);
         // lights.push(rectLight);
 
-        const directionLight = new THREE.DirectionalLight(0xeeeeff, 0.2);
+        const directionLight = new THREE.DirectionalLight(0xeeeeff, 0.1);
         directionLight.position.set(600, 400, 200);
         lights.push(directionLight)
 
@@ -205,44 +227,23 @@ const AaaThree = (function () {
 
     const makePointLights = function (spaceX: number, spaceY: number, distance: number) {
 
-
-        // const mX = Math.ceil((spaceX / 2) / distance);
-        // const mY = Math.ceil((spaceY / 2) / distance);
-
-        const pointLights = [];
-        // for (let i = -mX + 1; i < mX; i++) {
-        //     for (let j = -mY + 1; j < mY; j++) {
-        //         let pointLight = new THREE.PointLight(0xffffff, PointLightintensity, 500);
-        //         pointLight.position.set(i * distance, HALL_HEIGHT, j * distance);
-        //         pointLights.push(pointLight);
-
-        //     }
-        // }
-        // let pointLight = new THREE.PointLight(0xffffff, 3 * POINTLIGHT_INTENSITY, 200);
-        // pointLight.position.set(-25, HALL_HEIGHT / 2, 0);
-
         let pointLight = new THREE.PointLight(0xffffff, POINTLIGHT_INTENSITY, 100);
-        pointLight.position.set(-spaceX / 6, HALL_HEIGHT / 2, -spaceY / 6);
+        pointLight.position.set(0, 1, -HALL_SIZE_UNIT * 0.85);
 
         let pointLight2 = new THREE.PointLight(0xffffff, POINTLIGHT_INTENSITY, 100);
-        pointLight2.position.set(-spaceX / 6, HALL_HEIGHT / 2, spaceY / 6);
+        pointLight2.position.set(HALL_SIZE_UNIT * 0.4, 1, -HALL_SIZE_UNIT * 0.6);
 
         let pointLight3 = new THREE.PointLight(0xffffff, POINTLIGHT_INTENSITY, 100);
-        pointLight3.position.set(spaceX / 6, HALL_HEIGHT / 2, -spaceY / 6);
+        pointLight3.position.set(-HALL_SIZE_UNIT * 0.4, 1, -HALL_SIZE_UNIT * 0.6);
 
-        let pointLight4 = new THREE.PointLight(0xffffff, POINTLIGHT_INTENSITY, 100);
-        pointLight4.position.set(spaceX / 6, HALL_HEIGHT / 2, spaceY / 6);
-        // return [pointLight];
-
-        return [pointLight, pointLight2, pointLight3, pointLight4];
+        return [pointLight, pointLight2, pointLight3];
     }
 
     const makeWall = function () {
         const boxMaterial = new THREE.MeshPhysicalMaterial({
             flatShading: true,
-
             dithering: true,
-            color: new THREE.Color('#ffffff')
+            color: new THREE.Color('#dddddd')
         });
 
         // const walls = [];
@@ -264,12 +265,12 @@ const AaaThree = (function () {
 
         // load a image resource
         loader.load(
-            `${SERVER_URL}/static/${photoInfo.file_path}`,
+            `${SERVER_URL}/static/${photoInfo.thumbnail_path}`,
             function (imageBitmap: ImageBitmap) {
                 const photoObject = new THREE.Object3D();
 
-                const frameX = imageBitmap.width / 100;
-                const frameY = imageBitmap.height / 100;
+                const frameX = imageBitmap.width / 30;
+                const frameY = imageBitmap.height / 30;
                 let texture = new THREE.CanvasTexture(imageBitmap as any);
                 let material = new THREE.MeshBasicMaterial({
                     side: THREE.DoubleSide,
@@ -340,8 +341,8 @@ const AaaThree = (function () {
 
     const makeFrameGeometry = function (frameX: number, frameY: number) {
 
-        let frameOuterX = frameX / 2 + 1;
-        let frameOuterY = frameY / 2 + 1
+        let frameOuterX = frameX / 2 + FRAME_WIDTH;
+        let frameOuterY = frameY / 2 + FRAME_WIDTH;
         let frameinnerX = frameX / 2;
         let frameinnerY = frameY / 2;
         const frameShape = new THREE.Shape([
@@ -373,10 +374,10 @@ const AaaThree = (function () {
     }
 
     const makeFrameLineGeometry = function (frameX: number, frameY: number) {
-        let frameOuterX = frameX / 2 + 1.5;
-        let frameOuterY = frameY / 2 + 1.5;
-        let frameinnerX = frameX / 2 + 1;
-        let frameinnerY = frameY / 2 + 1;
+        let frameOuterX = frameX / 2 + FRAME_WIDTH + FRAME_SELECTOR_WIDTH;
+        let frameOuterY = frameY / 2 + FRAME_WIDTH + FRAME_SELECTOR_WIDTH;
+        let frameinnerX = frameX / 2 + FRAME_WIDTH;
+        let frameinnerY = frameY / 2 + FRAME_WIDTH;
 
         const frameShape = new THREE.Shape([
             new THREE.Vector2(-frameOuterX, frameOuterY),
@@ -428,12 +429,51 @@ const AaaThree = (function () {
         const dome = new THREE.Mesh(domeGeometry, boxMaterial);
         dome.position.set(0, 42, 60);
         entranceObject.add(dome)
-        
+
         // wall.position.set(wallInfo.xPosition, HALL_HEIGHT / 2 - 10, wallInfo.zPosition);
         // wall.rotation.set(0, wallInfo.rotation, 0);
         // wall.name = `wall${idx}`
         return entranceObject;
     }
+
+    const makeArrow = function() {
+        const loader = new THREE.ImageBitmapLoader();
+
+        // load a image resource
+        loader.load(
+            arrowImg,
+            function (imageBitmap: ImageBitmap) {
+
+                const frameX = imageBitmap.width / 10;
+                const frameY = imageBitmap.height / 10;
+                let texture = new THREE.CanvasTexture(imageBitmap as any);
+                let material = new THREE.MeshPhysicalMaterial({
+                    side: THREE.DoubleSide,
+                    map: texture
+                });
+                let geometry = new THREE.PlaneBufferGeometry(frameX, frameY);
+                let arrow = new THREE.Mesh(geometry, material);
+                arrow.position.set(20, PHOTO_HEIGHT, -72.4);
+                arrow.rotation.x += Math.PI;
+
+                scene.add(arrow);
+            },
+            // onProgress callback currently not supported
+            undefined,
+
+            // onError callback
+            function (err) {
+                console.error(err);
+            }
+        );
+    }
+
+    // const makeWords = function() {
+    //     const loader = new THREE.FontLoader();
+    //     loader.load('../assets/fonts/Minguk-Regular.json', function(font) {
+    //         console.log('load success')
+    //     })
+    // }
 
     function onWindowResize() {
         camera.aspect = window.innerWidth / window.innerHeight;
@@ -444,25 +484,27 @@ const AaaThree = (function () {
     function animate() {
         requestAnimationFrame(animate);
         // console.log('animate')
-        if (Moving.getMoveLeft()) {
-            aaaControl.moveCamera(0, -SPEED);
-        }
-        if (Moving.getMoveRight()) {
-            aaaControl.moveCamera(0, SPEED);
-        }
-        if (Moving.getMoveForward()) {
-            aaaControl.moveCamera(SPEED, 0);
-        }
-        if (Moving.getMoveBackward()) {
-            aaaControl.moveCamera(-SPEED, 0);
-        }
-        if (Moving.getRotation()) {
+        if (!Moving.getBlockMove()) {
+            if (Moving.getMoveLeft()) {
+                aaaControl.moveCamera(0, -SPEED);
+            }
+            if (Moving.getMoveRight()) {
+                aaaControl.moveCamera(0, SPEED);
+            }
+            if (Moving.getMoveForward()) {
+                aaaControl.moveCamera(SPEED, 0);
+            }
+            if (Moving.getMoveBackward()) {
+                aaaControl.moveCamera(-SPEED, 0);
+            }
+            if (Moving.getRotation()) {
 
-            let division = Moving.getRotation() > 0
-                ? Math.floor(Moving.getRotation() * 9 / 10)
-                : Math.ceil(Moving.getRotation() * 9 / 10);
-            aaaControl.rotateCamera(0, (Moving.getRotation() - division) * SPEED_ROTATE, 0)
-            Moving.setRotation(division)
+                let division = Moving.getRotation() > 0
+                    ? Math.floor(Moving.getRotation() * 9 / 10)
+                    : Math.ceil(Moving.getRotation() * 9 / 10);
+                aaaControl.rotateCamera(0, (Moving.getRotation() - division) * SPEED_ROTATE, 0)
+                Moving.setRotation(division)
+            }
         }
 
         stats.update();
@@ -540,6 +582,7 @@ const AaaThree = (function () {
         setMoveForward: Moving.setMoveForward,
         setMoveBackward: Moving.setMoveBackward,
         addRotation: Moving.addRotation,
+        setBlockMove: Moving.setBlockMove,
         makePhoto: makePhoto
     }
 

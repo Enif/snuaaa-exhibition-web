@@ -8,7 +8,7 @@ import { composeWithDevTools } from 'redux-devtools-extension'; // 리덕스 개
 import Section from './components/Section';
 import rootReducer from './reducers';
 
-import './App.css';
+import './App.scss';
 import 'remixicon/fonts/remixicon.css'
 
 function App() {
@@ -36,6 +36,7 @@ function App() {
           <Section />
         </Router>
       </Provider>
+      <p className="background-copyright">ⓒ 2020, 서울대학교 아마추어 천문회. Programmed by Enif</p>
     </div>
   );
 }

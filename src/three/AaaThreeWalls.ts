@@ -1,11 +1,11 @@
-import { HALL_SIZE_UNIT, HALL_SIZE_X, HALL_HEIGHT } from './AaaThreeConstant';
+import { HALL_SIZE_UNIT } from './AaaThreeConstant';
 
 const cos36 = Math.cos(36 * Math.PI / 180);
 const sin36 = Math.sin(36 * Math.PI / 180);
 const cos72 = Math.cos(72 * Math.PI / 180);
 const sin72 = Math.sin(72 * Math.PI / 180);
 
-const WALL_BUFFER = 7;
+const WALL_BUFFER = 4;
 
 const wallsInfo = [
 
@@ -81,15 +81,15 @@ const wallsInfo = [
         rotation: 0
     },
     {
-        length: HALL_SIZE_UNIT * 0.382,
+        length: HALL_SIZE_UNIT * 0.395,
         xPosition: HALL_SIZE_UNIT * 0.73,
-        zPosition: - HALL_SIZE_UNIT * 0.76,
+        zPosition: - HALL_SIZE_UNIT * 0.77,
         rotation: - 72 * Math.PI / 180
     },
     {
-        length: HALL_SIZE_UNIT * 0.382,
+        length: HALL_SIZE_UNIT * 0.395,
         xPosition: - HALL_SIZE_UNIT * 0.73,
-        zPosition: - HALL_SIZE_UNIT * 0.76,
+        zPosition: - HALL_SIZE_UNIT * 0.77,
         rotation: 72 * Math.PI / 180
     },
 

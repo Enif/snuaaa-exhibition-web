@@ -6,6 +6,7 @@ import usePhoto from '../hooks/usePhoto';
 import './hall.scss';
 import GuestBook from './GuestBook';
 import BallotBox from './BallotBox';
+import ToolTop from './ToolTip';
 
 function Hall() {
 
@@ -16,6 +17,7 @@ function Hall() {
     const { photos, selectedPhoto, setPhotos, selectPhoto } = usePhoto();
     const [isGuestBookPop, setIsGuestBookPop] = useState(false);
     const [isBallotBoxPop, setIsBallotBoxPop] = useState(false);
+    const [isToolTipPop, setIsToolTipPop] = useState(true);
 
     useEffect(() => {
         if (blockerTarget.current) {
@@ -37,6 +39,15 @@ function Hall() {
             AaaThree.makePhoto(photo, onPhotoClick)
         })
     }, [photos])
+
+    useEffect(() => {
+        if (isGuestBookPop || isBallotBoxPop || isToolTipPop || selectedPhoto) {
+            AaaThree.setBlockMove(true);
+        }
+        else {
+            AaaThree.setBlockMove(false);
+        }
+    }, [isGuestBookPop, isBallotBoxPop, isToolTipPop, selectedPhoto])
 
     const onPhotoClick = function (photo_id: number) {
         selectPhoto(photo_id);
@@ -150,8 +161,13 @@ function Hall() {
                 onMouseOut={onMouseOut}
                 onTouchStart={onTouchStart}
                 onTouchEnd={onTouchEnd}
-                onTouchMove={onTouchMove}>
+                onTouchMove={onTouchMove}
+                onContextMenu={(e) => { e.preventDefault() }}
+            >
                 <div className="hall-btn-wrp">
+                    <button className="btn-general" onClick={() => setIsToolTipPop(true)}>
+                        <i className="ri-question-mark"></i>
+                    </button>
                     <button className="btn-general" onClick={() => setIsGuestBookPop(true)}>
                         <i className="ri-draft-line"></i>
                     </button>
@@ -202,6 +218,11 @@ function Hall() {
                 isBallotBoxPop
                 &&
                 <BallotBox close={() => setIsBallotBoxPop(false)} />
+            }
+            {
+                isToolTipPop
+                &&
+                <ToolTop close={() => setIsToolTipPop(false)} />
             }
         </>
     )

@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import GuestBookService from '../services/GuestBookService';
+import moment from 'moment'
 import './guestBook.scss';
+import './popup.scss';
+
+import GuestBookService from '../services/GuestBookService';
 import GuestBookType from '../types/GuestBookType';
 import useAuth from '../hooks/useAuth';
 import NicknameInput from './NicknameInput';
@@ -44,10 +47,15 @@ function GuestBook({ close }: GuestBookProps) {
         return guestbooks.map((guestbook) => {
             return (
                 <div className="guestbook-list-unit">
-                    {guestbook.text}
-                    {/* {guestbook.author_id} */}
-                    <p>{guestbook.author.nickname}</p>
-                    <p>{guestbook.created_at}</p>
+                    <div className="guestbook-list-top left">
+                        <p>{guestbook.author.nickname}</p>
+                    </div>
+                    <div className="guestbook-list-top right">
+                        <p>{moment(guestbook.created_at).format('YYYY-MM-DD')}</p>
+                    </div>
+                    <div className="guestbook-list-text">
+                        <p>{guestbook.text}</p>
+                    </div>
                 </div>
             )
         })
@@ -55,23 +63,25 @@ function GuestBook({ close }: GuestBookProps) {
 
     return (
         <>
-            <div className="guestbook-wrp">
-                <div className="guestbook">
-                    <button className="guestbook-btn-close" onClick={close}>
+            <div className="popup-wrp">
+                <div className="popup">
+                    <button className="popup-btn-close" onClick={close}>
                         <i className="ri-close-line"></i>
                     </button>
                     <h3>방 명 록</h3>
                     {
                         auth.nickname ?
-                            <div className="guestbook-body">
-                                <div className="guestbook-list">
-                                    {makeGuestBookList(guestBooks)}
+                            <>
+                                <div className="guestbook-body">
+                                    <div className="guestbook-list">
+                                        {makeGuestBookList(guestBooks)}
+                                    </div>
                                 </div>
                                 <div className="guestbook-write">
                                     <textarea onChange={(e) => setInputText(e.target.value)} value={inputText} />
-                                    <button onClick={() => submit(inputText)}>enter</button>
+                                    <button onClick={() => submit(inputText)}>ENTER</button>
                                 </div>
-                            </div>
+                            </>
                             :
                             <NicknameInput />
                     }

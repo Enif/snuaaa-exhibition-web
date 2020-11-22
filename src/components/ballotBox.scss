@@ -1,27 +1,89 @@
-.ballot-list {
-    padding: 2rem;
-    display: flex;
+.ballot-list-wrp {
+  position: relative;
+  height: 70%;
+  &::before {
+    z-index: 1;
+    content: "";
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 2.5rem;
+    margin: 0 auto;
+    background: linear-gradient(rgba(73, 80, 95, 1),rgba(73, 80, 95, 0));
+  }
+  &::after {
+    z-index: 1;
+    content: "";
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 2.5rem;
+    margin: 0 auto;
+    background: linear-gradient(rgba(73, 80, 95, 0),rgba(73, 80, 95, 1));
+  }
+  @media screen and (max-width: 800px) {
+    height: 60%;
+    padding: 1rem 0;
+  }
+}
 
-    .ballot-list-unit {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 7rem;
-        height: 7rem;
-        border: 1px solid black;
-        border-radius: 0.5rem;
-        padding: 0.5rem;
-        margin: 1rem;
-        cursor: pointer;
-        &.selected {
-            background-color: #FFFFFF;
-        }
-        &:hover {
-            background-color: #FFFFFF;
-        }
-        img {
-            max-height: 100%;
-            max-width: 100%;
-        }
+.ballot-list {
+  padding: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  height: 100%;
+  justify-content: center;
+  overflow: auto;
+  position: relative;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  .ballot-list-unit {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 7rem;
+    height: 7rem;
+    border: 1px solid #ffffff;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    margin: 0.5rem;
+    cursor: pointer;
+    &.selected {
+      background-color: #ffffff;
+      border: 1px solid #c8d8ff;
     }
+    &:hover {
+      background-color: #8dadbf;
+    }
+    img {
+      max-height: 100%;
+      max-width: 100%;
+    }
+  }
+}
+
+.ballot-btn-submit {
+  margin: 1rem auto;
+  width: 5rem;
+  height: 2.5rem;
+  background-color: #8dadbf;
+  border: none;
+  color: #FFFFFF;
+  font-size: 1.1rem;
+  border-radius: 0.5rem;
+  // margin: 2rem auto;
+  // height: 3rem;
+  // width: 6rem;
+  // font-size: 1.2rem;
+  // border-radius: 1rem;
+}
+.ballot-list-result {
+  margin: 2rem 0;
+  text-align: center;
+  font-size: 2rem;
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

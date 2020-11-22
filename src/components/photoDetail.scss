@@ -4,6 +4,8 @@
   width: 100%;
   background: rgb(255, 255, 255);
   display: flex;
+  cursor: default;
+  z-index: 1;
   // justify-content: center;
   @media screen and (max-width: 800px) {
     flex-direction: column;
@@ -43,17 +45,18 @@
     border: none;
     background: none;
     color: gray;
-    background: rgba(240, 240, 240, 0.9);
+    background: rgba(240, 240, 240, 0.5);
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
-    // transition: all 1s;
+    transition: all 0.2s;
     cursor: pointer;
     @media screen and (max-width: 800px) {
       margin: 1rem;
     }
     &:hover {
+      background: rgba(240, 240, 240, 0.9);
       color: #87acff;
     }
   }
@@ -90,6 +93,12 @@
       width: 100%;
       object-fit: contain;
     }
+    video {
+      height: 100%;
+      width: 100%;
+      object-fit: contain;      
+    }
+
   }
 
   .photo-detail-infos-wrp {
@@ -97,10 +106,13 @@
     flex-direction: column;
     font-size: 1rem;
     padding: 4rem 4rem;
-    justify-content: center;
     align-items: center;
+    height: 100%;
+    overflow: auto;
     @media screen and (max-width: 800px) {
       padding: 2rem;
+      height: auto;
+      justify-content: center;
     }
   }
   .photo-detail-info-unit {
