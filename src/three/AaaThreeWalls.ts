@@ -128,4 +128,64 @@ const wallsInfo = [
     }
 ]
 
-export default wallsInfo
+const AaaWallsInfo = [
+    {
+        length: HALL_SIZE_UNIT + WALL_BUFFER,
+        xPosition: HALL_SIZE_UNIT * (3 * cos36 - 2 * cos72) / 2,
+        zPosition: - HALL_SIZE_UNIT * (2 * sin72 - sin36) / 2,
+        rotation: 36 * Math.PI / 180
+    },
+    {
+        length: HALL_SIZE_UNIT + WALL_BUFFER,
+        xPosition: HALL_SIZE_UNIT * (4 * cos36 - 2 * cos72 - 1) / 2,
+        zPosition: - HALL_SIZE_UNIT * (2 * sin72) / 2,
+        rotation: 0
+    },
+    {
+        length: HALL_SIZE_UNIT + WALL_BUFFER,
+        xPosition: HALL_SIZE_UNIT * (2 * cos36 - cos72 - 1) / 2,
+        zPosition: - HALL_SIZE_UNIT * (3 * sin72) / 2,
+        rotation: -72 * Math.PI / 180
+    },
+    {
+        length: HALL_SIZE_UNIT + WALL_BUFFER,
+        xPosition: - HALL_SIZE_UNIT * (3 * cos36 - 2 * cos72) / 2,
+        zPosition: - HALL_SIZE_UNIT * (2 * sin72 - sin36) / 2,
+        rotation: - 36 * Math.PI / 180
+    },
+    {
+        length: HALL_SIZE_UNIT + WALL_BUFFER,
+        xPosition: - HALL_SIZE_UNIT * (4 * cos36 - 2 * cos72 - 1) / 2,
+        zPosition: - HALL_SIZE_UNIT * (2 * sin72) / 2,
+        rotation: 0
+    },
+    {
+        length: HALL_SIZE_UNIT + WALL_BUFFER,
+        xPosition: - HALL_SIZE_UNIT * (2 * cos36 - cos72 - 1) / 2,
+        zPosition: - HALL_SIZE_UNIT * (3 * sin72) / 2,
+        rotation: 72 * Math.PI / 180
+    },
+
+    // Inner, Top
+    {
+        length: HALL_SIZE_UNIT * 0.382,
+        xPosition: 0,
+        zPosition: - HALL_SIZE_UNIT * 1.3,
+        rotation: 0
+    },
+    {
+        length: HALL_SIZE_UNIT * 0.395,
+        xPosition: HALL_SIZE_UNIT * 0.73,
+        zPosition: - HALL_SIZE_UNIT * 0.77,
+        rotation: - 72 * Math.PI / 180
+    },
+    {
+        length: HALL_SIZE_UNIT * 0.395,
+        xPosition: - HALL_SIZE_UNIT * 0.73,
+        zPosition: - HALL_SIZE_UNIT * 0.77,
+        rotation: 72 * Math.PI / 180
+    },
+
+]
+
+export { wallsInfo, AaaWallsInfo }

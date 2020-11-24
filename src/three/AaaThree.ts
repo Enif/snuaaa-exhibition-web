@@ -7,11 +7,12 @@ import ceilingImg from '../assets/imgs/ceiling_final.webp';
 // import ceilingImg from '../assets/imgs/universe.webp';
 import AaaControls from './AaaThreeControl';
 import PhotoType from '../types/PhotoType';
-import wallsInfo from './AaaThreeWalls';
+import { wallsInfo, AaaWallsInfo } from './AaaThreeWalls';
 import { HALL_SIZE_UNIT } from './AaaThreeConstant';
 
 import mingukFont from '../assets/fonts/Minguk-Regular.json';
 import arrowImg from '../assets/imgs/arrow.png';
+import posterImg from '../assets/imgs/poster.jpg';
 
 const SPEED = 1;
 const SPEED_ROTATE = 0.005;
@@ -134,6 +135,7 @@ const AaaThree = (function () {
         scene.add(floor);
         scene.add(...walls);
         scene.add(entrance)
+        scene.add(...makeAAA())
 
         wallObjects.push(...walls);
 
@@ -149,6 +151,15 @@ const AaaThree = (function () {
 
         // targetElement.appendChild(stats.dom);
 
+    }
+
+    function fly(isFly: boolean) {
+        if (isFly) {
+            aaaControl.yawObject.position.y = 150;
+        }
+        else {
+            aaaControl.yawObject.position.y = 20;
+        }
     }
 
     const makeFloor = function () {
@@ -167,7 +178,7 @@ const AaaThree = (function () {
 
     const makeCeiling = function () {
         return new Promise<THREE.Object3D>((resolve, reject) => {
-            const loader = new THREE.ImageBitmapLoader();
+            const loader = new THREE.ImageLoader();
 
             loader.loadAsync(ceilingImg)
                 .then((imageBitmap) => {
@@ -259,14 +270,37 @@ const AaaThree = (function () {
         })
     }
 
+    const makeAAA = function () {
+
+        const boxMaterial = new THREE.MeshPhysicalMaterial({
+            flatShading: true,
+            dithering: true,
+            color: new THREE.Color('#fff942')
+        });
+
+
+        return AaaWallsInfo.map((wallInfo, idx) => {
+            const planeGeometry = new THREE.PlaneBufferGeometry(wallInfo.length, 5);
+
+            const wall = new THREE.Mesh(planeGeometry, boxMaterial);
+            wall.rotateY(wallInfo.rotation)
+            wall.rotateX(-Math.PI / 2);
+            // wall.rotation.set(-Math.PI / 2, wallInfo.rotation, 0)
+            wall.position.set(wallInfo.xPosition, HALL_HEIGHT- 9.9, wallInfo.zPosition);
+            // wall.rotation.set(0, wallInfo.rotation, 0);
+            wall.name = `aaa_wall${idx}`
+            return wall
+        })
+    }
+
     const makePhoto = function (photoInfo: PhotoType, onClick: (photo_id: number) => void) {
 
-        const loader = new THREE.ImageBitmapLoader();
+        const loader = new THREE.ImageLoader();
 
         // load a image resource
         loader.load(
             `${SERVER_URL}/static/${photoInfo.thumbnail_path}`,
-            function (imageBitmap: ImageBitmap) {
+            function (imageBitmap) {
                 const photoObject = new THREE.Object3D();
 
                 const frameX = imageBitmap.width / 30;
@@ -280,7 +314,7 @@ const AaaThree = (function () {
                 let photo = new THREE.Mesh(geometry, material);
                 // let photo_id = photoInfo.photo_id
                 photo.position.set(0, PHOTO_HEIGHT, 0.1);
-                photo.rotation.x += Math.PI;
+                // photo.rotation.x += Math.PI;
                 photo.name = `photoMesh${photoInfo.photo_id}`
                 photoObject.add(photo)
                 photo.addEventListener("click", (e: THREE.Event) => {
@@ -320,7 +354,7 @@ const AaaThree = (function () {
                 const spotLight = new THREE.SpotLight(0xffffff, 0.8, 130, Math.PI / 9, 1, 2);
                 spotLight.position.set(0, HALL_HEIGHT - 5, +45);
                 spotLight.target = photo;
-                photoObject.add(spotLight);
+                // photoObject.add(spotLight);
 
                 photoObject.position.set(photoInfo.xPos, 0, photoInfo.zPos);
                 photoObject.rotation.y += photoInfo.rotation / 180 * Math.PI;
@@ -436,14 +470,26 @@ const AaaThree = (function () {
         return entranceObject;
     }
 
-    const makeArrow = function() {
-        const loader = new THREE.ImageBitmapLoader();
+    const makeArrow = function () {
+        // if (!('createImageBitmap' in window)) {
+        //     window.createImageBitmap = async function (blob: ImageBitmapSource) {
+        //         return new Promise<ImageBitmap>((resolve, reject) => {
+        //             let img = document.createElement('img');
+        //             img.addEventListener('load', function () {
+        //                 resolve(this);
+        //             });
+        //             img.src = URL.createObjectURL(blob);
+        //         });
+        //     };
+        // }
 
-        // load a image resource
-        loader.load(
+
+
+        // const loader = new THREE.ImageLoader();
+
+        new THREE.ImageLoader().load(
             arrowImg,
-            function (imageBitmap: ImageBitmap) {
-
+            function (imageBitmap) {
                 const frameX = imageBitmap.width / 10;
                 const frameY = imageBitmap.height / 10;
                 let texture = new THREE.CanvasTexture(imageBitmap as any);
@@ -453,19 +499,50 @@ const AaaThree = (function () {
                 });
                 let geometry = new THREE.PlaneBufferGeometry(frameX, frameY);
                 let arrow = new THREE.Mesh(geometry, material);
-                arrow.position.set(20, PHOTO_HEIGHT, -72.4);
+                arrow.position.set(50, PHOTO_HEIGHT, -72.4);
                 arrow.rotation.x += Math.PI;
-
                 scene.add(arrow);
             },
-            // onProgress callback currently not supported
             undefined,
-
             // onError callback
             function (err) {
                 console.error(err);
-            }
-        );
+            });
+
+        new THREE.ImageLoader().load(posterImg,
+            function (imageBitmap) {
+                const frameX = imageBitmap.width / 50;
+                const frameY = imageBitmap.height / 50;
+                let texture = new THREE.CanvasTexture(imageBitmap as any);
+                let material = new THREE.MeshPhysicalMaterial({
+                    side: THREE.DoubleSide,
+                    map: texture
+                });
+                let geometry = new THREE.PlaneBufferGeometry(frameX, frameY);
+                let poster1 = new THREE.Mesh(geometry, material);
+                poster1.position.set(25, PHOTO_HEIGHT, -72.4);
+                let poster2 = new THREE.Mesh(geometry, material);
+                poster2.position.set(0, PHOTO_HEIGHT, -72.4);
+                let poster3 = new THREE.Mesh(geometry, material);
+                poster3.position.set(-25, PHOTO_HEIGHT, -72.4);
+                let poster4 = new THREE.Mesh(geometry, material);
+                poster4.position.set(-50, PHOTO_HEIGHT, -72.4);
+
+                scene.add(poster1, poster2, poster3, poster4);
+            },
+            undefined,
+            // onError callback
+            function (err) {
+                console.error(err);
+            });
+
+        // load a image resource
+        // loader.load(
+        //     arrowImg,
+        //     // onProgress callback currently not supported
+        //     undefined,
+
+        // );
     }
 
     // const makeWords = function() {
@@ -484,30 +561,30 @@ const AaaThree = (function () {
     function animate() {
         requestAnimationFrame(animate);
         // console.log('animate')
-        if (!Moving.getBlockMove()) {
-            if (Moving.getMoveLeft()) {
-                aaaControl.moveCamera(0, -SPEED);
-            }
-            if (Moving.getMoveRight()) {
-                aaaControl.moveCamera(0, SPEED);
-            }
-            if (Moving.getMoveForward()) {
-                aaaControl.moveCamera(SPEED, 0);
-            }
-            if (Moving.getMoveBackward()) {
-                aaaControl.moveCamera(-SPEED, 0);
-            }
-            if (Moving.getRotation()) {
-
-                let division = Moving.getRotation() > 0
-                    ? Math.floor(Moving.getRotation() * 9 / 10)
-                    : Math.ceil(Moving.getRotation() * 9 / 10);
-                aaaControl.rotateCamera(0, (Moving.getRotation() - division) * SPEED_ROTATE, 0)
-                Moving.setRotation(division)
-            }
+        // if (!Moving.getBlockMove()) {
+        if (Moving.getMoveLeft()) {
+            aaaControl.moveCamera(0, -SPEED);
         }
+        if (Moving.getMoveRight()) {
+            aaaControl.moveCamera(0, SPEED);
+        }
+        if (Moving.getMoveForward()) {
+            aaaControl.moveCamera(SPEED, 0);
+        }
+        if (Moving.getMoveBackward()) {
+            aaaControl.moveCamera(-SPEED, 0);
+        }
+        if (Moving.getRotation()) {
 
-        stats.update();
+            let division = Moving.getRotation() > 0
+                ? Math.floor(Moving.getRotation() * 9 / 10)
+                : Math.ceil(Moving.getRotation() * 9 / 10);
+            aaaControl.rotateCamera(0, (Moving.getRotation() - division) * SPEED_ROTATE, 0)
+            Moving.setRotation(division)
+        }
+        // }
+
+        // stats.update();
 
         renderer.render(scene, camera);
     }
@@ -583,7 +660,9 @@ const AaaThree = (function () {
         setMoveBackward: Moving.setMoveBackward,
         addRotation: Moving.addRotation,
         setBlockMove: Moving.setBlockMove,
-        makePhoto: makePhoto
+        getBlockMove: Moving.getBlockMove,
+        makePhoto: makePhoto,
+        fly: fly
     }
 
 })();

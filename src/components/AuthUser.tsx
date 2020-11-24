@@ -12,7 +12,7 @@ function AuthUser() {
     const { auth, setAuth } = useAuth();
 
     const REDIRECT_URL = process.env.NODE_ENV === "production"
-        ? `${process.env.PUBLIC_URL}${location.pathname}`
+        ? `https://exhibition.snuaaa.net${location.pathname}`
         : `http://localhost:3000${location.pathname}`
 
     useEffect(() => {

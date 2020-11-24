@@ -11,7 +11,7 @@ function Welcome() {
     const [isViewPolicy, setIsViewPolicy] = useState(false);
 
     const REDIRECT_URL = process.env.NODE_ENV === "production"
-        ? `${process.env.PUBLIC_URL}auth/google`
+        ? `https://exhibition.snuaaa.net/auth/google`
         : `http://localhost:3000/auth/google`
 
     return (

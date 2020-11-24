@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import moment from 'moment';
 import './photoDetail.scss';
 import usePhoto from '../hooks/usePhoto';
@@ -11,10 +11,29 @@ type PhotoDetailProps = {
 function PhotoDetail({ close }: PhotoDetailProps) {
 
     const { selectedPhoto } = usePhoto();
+    const [isFullscreen, setIsFullscreen] = useState(false);
+    const imgRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (isFullscreen) {
+            if (imgRef.current && imgRef.current.requestFullscreen) {
+                imgRef.current.requestFullscreen();
+            }
+        }
+        else {
+            if (document.fullscreenElement && document.exitFullscreen) {
+                document.exitFullscreen();
+            }
+        }
+    }, [isFullscreen])
+
+    const toggleFullscreen = function () {
+        setIsFullscreen(!isFullscreen);
+    }
 
     return (
         <div className="photo-detail">
-            <div className="photo-detail-left" onContextMenu={(e) => e.preventDefault()}>
+            <div className={`photo-detail-left${isFullscreen ? " full" : ""}`} onContextMenu={(e) => e.preventDefault()} ref={imgRef}>
                 <div className="blur-img-wrp">
                     <img className="blur-img" src={`${SERVER_URL}/static/${selectedPhoto.thumbnail_path}`} />
                 </div>
@@ -26,8 +45,12 @@ function PhotoDetail({ close }: PhotoDetailProps) {
                             <img src={`${SERVER_URL}/static/${selectedPhoto.file_path}`} />
                     }
                 </div>
-                <button className="photo-detail-btn-close" onClick={close}>
+                <button className="photo-detail-btn close" onClick={close}>
                     <i className="ri-close-line"></i>
+                </button>
+                {/* 'ri-fullscreen-exit-fill' : 'ri-fullscreen-fill' */}
+                <button className="photo-detail-btn expand" onClick={toggleFullscreen}>
+                    <i className={`ri-fullscreen${isFullscreen ? "-exit-fill" : "-fill"}`}></i>
                 </button>
             </div>
             <div className="photo-detail-right">

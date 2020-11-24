@@ -18,6 +18,7 @@ function Hall() {
     const [isGuestBookPop, setIsGuestBookPop] = useState(false);
     const [isBallotBoxPop, setIsBallotBoxPop] = useState(false);
     const [isToolTipPop, setIsToolTipPop] = useState(true);
+    const [isFly, setIsFly] = useState(false);
 
     useEffect(() => {
         if (blockerTarget.current) {
@@ -55,29 +56,31 @@ function Hall() {
 
     const onKeyDown = function (event: KeyboardEvent) {
 
-        switch (event.keyCode) {
+        if (!AaaThree.getBlockMove()) {
+            switch (event.keyCode) {
 
-            case 38: // up
-            case 87: // w
-                AaaThree.setMoveForward(true);
-                break;
+                case 38: // up
+                case 87: // w
+                    AaaThree.setMoveForward(true);
+                    break;
 
-            case 37: // left
-            case 65: // a
-                AaaThree.setMoveLeft(true)
-                break;
+                case 37: // left
+                case 65: // a
+                    AaaThree.setMoveLeft(true)
+                    break;
 
-            case 40: // down
-            case 83: // s
-                AaaThree.setMoveBackward(true)
-                break;
+                case 40: // down
+                case 83: // s
+                    AaaThree.setMoveBackward(true)
+                    break;
 
-            case 39: // right
-            case 68: // d
-                AaaThree.setMoveRight(true)
-                break;
+                case 39: // right
+                case 68: // d
+                    AaaThree.setMoveRight(true)
+                    break;
 
-            default: break;
+                default: break;
+            }
         }
     };
 
@@ -133,15 +136,18 @@ function Hall() {
     }
 
     const onTouchStart = function (e: TouchEvent) {
+        // e.preventDefault();
         mouseX = e.touches[0].clientX;
         isMoving = true;
     }
 
     const onTouchEnd = function (e: TouchEvent) {
+        // e.preventDefault();
         isMoving = false;
     }
 
     const onTouchMove = function (e: TouchEvent) {
+        // e.preventDefault();
         if (e.touches[0]) {
             if (isMoving) {
                 AaaThree.addRotation(mouseX - e.touches[0].clientX)
@@ -150,6 +156,10 @@ function Hall() {
         }
     }
 
+    const toggleFly = function() {
+        AaaThree.fly(!isFly);
+        setIsFly(!isFly);
+    }
 
     return (
         <>
@@ -165,6 +175,14 @@ function Hall() {
                 onContextMenu={(e) => { e.preventDefault() }}
             >
                 <div className="hall-btn-wrp">
+                    <button className="btn-general" onClick={() => toggleFly()}>
+                        {
+                            isFly ?
+                            <i className="ri-flight-land-line"></i>
+                            :
+                            <i className="ri-flight-takeoff-line"></i>
+                        }
+                    </button>
                     <button className="btn-general" onClick={() => setIsToolTipPop(true)}>
                         <i className="ri-question-mark"></i>
                     </button>
@@ -176,7 +194,9 @@ function Hall() {
                     </button>
                 </div>
 
-                <div className="controls-wrapper">
+                <div className="controls-wrapper"
+                    onContextMenu={(e) => { e.preventDefault() }}
+                >
                     <button
                         className="controls-btn"
                         onTouchStart={() => AaaThree.setMoveLeft(true)}

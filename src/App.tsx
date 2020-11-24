@@ -18,10 +18,10 @@ function App() {
 
   useEffect(() => {
     if (navigator.userAgent.toLowerCase().indexOf('msie') !== -1) {
-      alert("MicroSoft Internet Explorer에서는 홈페이지가 정상 동작하지 않을 수 있습니다.")
+      alert("MicroSoft Internet Explorer에서는 홈페이지가 정상 동작하지 않을 수 있습니다. 최신 크롬 브라우저 혹은 Edge 브라우저를 이용해 주세요.")
     }
     else if ((navigator.appName === 'Netscape' && navigator.userAgent.search('Trident') !== -1)) {
-      alert("MicroSoft Internet Explorer에서는 홈페이지가 정상 동작하지 않을 수 있습니다.")
+      alert("MicroSoft Internet Explorer에서는 홈페이지가 정상 동작하지 않을 수 있습니다. 최신 크롬 브라우저 혹은 Edge 브라우저를 이용해 주세요.")
     }
     else {
 
